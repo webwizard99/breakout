@@ -7,8 +7,12 @@ const gameController = (function(){
     const game = {
         started: true,
         level: 0,
-        hasChanged: true
+        hasChanged: true,
+        leftPress: false,
+        rightPress: false
     }
+
+    const drag = 0.045;
 
     // Block function constructor
     const Block = function(width, hp, density, type) {
@@ -42,9 +46,32 @@ const gameController = (function(){
         maxSpeed: 4
     }
 
+    let paddle = {
+        color: `rgba(80, 110, 80, .9)`,
+        
+        position: {
+            x: 200,
+            y: 410,
+        },
+
+        velocity: 0,
+        acceleration: 0.16,
+
+        size: {
+            x: 90,
+            y: 10
+        },
+
+        maxSpeed: 3.5
+    }
+
     return {
         getBall: function() {
             return ball;
+        },
+
+        getPaddle: function() {
+            return paddle;
         },
 
         setBallPos: function(x, y) {
@@ -65,13 +92,17 @@ const gameController = (function(){
 
         },
 
-        getLevelSize: function() {
-            return levelSize;
+        setPaddlePos: function(x, y) {
+            
+            if (x > (0) && x < levelSize.x - (0 + paddle.size.x)) {
+                
+                paddle.position.x = x;
+            } 
+            paddle.position.y = y;
         },
 
-        getLevelSizeInCells: function() {
-            return {y: levels[game.level].length,
-                    x: levels[game.level][0].length};
+        getLevelSize: function() {
+            return levelSize;
         },
 
         createBasicLevel: function() {
@@ -136,6 +167,43 @@ const gameController = (function(){
             game.hasChanged = state;
         },
 
+        dragPaddle: function() {
+            if ((paddle.velocity > 0 && paddle.velocity > drag) || paddle.velocity < 0 && paddle.velocity < -drag) {
+                if (paddle.velocity > 0) {
+                    paddle.velocity -= drag;
+                } else if (paddle.velocity < 0) {
+                    paddle.velocity += drag;
+                }
+            }
+        },
+
+        addPaddleVelocity: function(vel) {
+            
+            if (vel !== 0) {
+                if ((paddle.velocity >= 0 && paddle.velocity < paddle.maxSpeed) ||
+                    paddle.velocity <= 0 && paddle.velocity > -paddle.maxSpeed) {
+                    paddle.velocity += vel;
+                }
+            }
+            
+        },
+
+        isLeftPress: function() {
+            return game.leftPress;
+        },
+
+        isRightPress: function() {
+            return game.rightPress;
+        },
+
+        setLeftPress: function(val) {
+            game.leftPress = val;
+        },
+
+        setRightPress: function(val) {
+            game.rightPress = val;
+        },
+
         test: function() {
             console.log(levels[game.level]);
         }
@@ -149,7 +217,8 @@ const gameController = (function(){
 
 const UIController = (function(){
     const DOMStrings = {
-        canvas: `#myCanvas`
+        canvas: `#myCanvas`,
+        container: `#mainContainer`
     };
 
     const levelThemes = [
@@ -173,7 +242,7 @@ const UIController = (function(){
            return DOMStrings;
         },
 
-        drawCanvas: function(CTX, x, y) {
+        drawCanvas: function(CTX) {
             
             const canvasRef = document.querySelector(DOMStrings.canvas);
             
@@ -201,13 +270,7 @@ const UIController = (function(){
                 
             }
             
-            //drawRect(CTX, `#FF0000`, 20, 40, 30, 30);
             
-            // CTX.beginPath();
-            // CTX.rect(20, 40, 50, 50);
-            // CTX.fillStyle = "#FF0000";
-            // CTX.fill();
-            // CTX.closePath();
         },
 
         drawCircle: function(ctx, fill, y, x, r) {
@@ -216,6 +279,10 @@ const UIController = (function(){
             ctx.fillStyle = fill;
             ctx.fill();
             ctx.closePath();
+        },
+
+        drawPaddle: function(ctx, paddle) {
+            drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
         },
 
         // populates the currentLevel object in the
@@ -240,8 +307,46 @@ const UIController = (function(){
 const Controller = (function(gameCtrl, UICtrl){
     
     setEventListeners = function() {
-        
+        const DOM = UICtrl.getDomStrings();
+        document.addEventListener('keydown', (e) => {
+            handleMovement(e);
+        });
+        document.addEventListener('keyup', (e) => {
+            toggleMovement(e);
+        });
     }
+
+    handleMovement = function(event) {
+        if (!event.isTrusted) return;
+        let paddle = gameCtrl.getPaddle();
+        
+        if (event.keyCode === 37) {
+            if (!gameCtrl.isLeftPress()) {
+                gameCtrl.setLeftPress(true);
+            }
+            
+        } else if (event.keyCode === 39) {
+            if (!gameCtrl.isRightPress()) {
+                gameCtrl.setRightPress(true);
+            }
+            
+        }
+
+    }
+
+    toggleMovement = function(event) {
+        if (event.keyCode === 37) {
+            if (gameCtrl.isLeftPress()) {
+                gameCtrl.setLeftPress(false);
+            }
+            
+        } else if (event.keyCode === 39) {
+            if (gameCtrl.isRightPress()) {
+                gameCtrl.setRightPress(false);
+            }
+            
+        }
+    } 
     
     // start a new game
     startGame = function() {
@@ -263,6 +368,10 @@ const Controller = (function(gameCtrl, UICtrl){
             ball.size);
     }
 
+    drawPaddle = function(ctx, paddle) {
+        UICtrl.drawPaddle(ctx, paddle);
+    }
+
     // handle an update frame called by setInterval
     update = function() {
         // link to the Canvas DOM object
@@ -271,8 +380,10 @@ const Controller = (function(gameCtrl, UICtrl){
         const ctx = mCanvas.getContext("2d");
 
         // get information from the game controller
-        // about the ball
+        // about the ball and paddle
         const ball = gameCtrl.getBall();
+        const paddle = gameCtrl.getPaddle();
+        
 
         // clear the canvas
         ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
@@ -284,14 +395,35 @@ const Controller = (function(gameCtrl, UICtrl){
             gameCtrl.setLevelState(false);
         }
 
-        const size = gameCtrl.getLevelSizeInCells();
-        UICtrl.drawCanvas(ctx, size.x, size.y);
+        UICtrl.drawCanvas(ctx);
 
         drawBall(ctx, ball);
+        drawPaddle(ctx, paddle);
 
+        // after drawing frame, move ball
         gameCtrl.setBallPos(
             ball.position.x + ball.velocity.x,
             ball.position.y - ball.velocity.y);
+
+        gameCtrl.setPaddlePos(
+            paddle.position.x + paddle.velocity,
+            paddle.position.y
+        );
+
+        
+
+        // handle Paddle movement if a key is pressed
+        if (gameCtrl.isLeftPress()) {
+            gameCtrl.addPaddleVelocity(-paddle.acceleration);
+        }
+        if (gameCtrl.isRightPress()) {
+            gameCtrl.addPaddleVelocity(paddle.acceleration);
+        }
+
+        // assert drag if not control is active
+        if (!gameCtrl.isLeftPress() && !gameCtrl.isRightPress()) {
+            gameCtrl.dragPaddle();
+        }
     }
     
     return {
