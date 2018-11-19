@@ -1,0 +1,29 @@
+/* Universal Styles */
+* { 
+    padding: 0;
+    margin: 0;
+}
+
+canvas {
+    background: #eee;
+    display: block;
+    margin: 0 auto;
+}
+
+#mainContainer {
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(0.1turn, rgba(100, 60, 60, .6), rgba(60, 60, 100, .6));
+}
+
+#title {
+    color: rgba(100, 120, 180, .95);
+    text-align: center;
+    font-size: 2rem;
+    padding-top: 1rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(30, 30, 30, .8),
+                -1px 1px 2px rgba(30, 30, 30, .8),
+                1px -1px 2px rgba(30, 30, 30, .8),
+                -1px -1px 2px rgba(30, 30, 30, .8);
+}
