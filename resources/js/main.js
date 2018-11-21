@@ -103,15 +103,15 @@ const gameController = (function(){
     }
 
     const columnsProto = 20;
-    const rowsProto = 24; 
+    const rowsProto = 32; 
     const cell = {
         width: levelSize.x / columnsProto,
         height: levelSize.y / rowsProto
     }
 
     const blockProto = {
-        width: cell.width * 0.9,
-        height: cell.height * 0.65
+        width: cell.width * 0.95,
+        height: cell.height * 0.90
     }
 
     // ball object
@@ -134,7 +134,7 @@ const gameController = (function(){
     }
 
     let paddle = {
-        color: `rgba(80, 110, 80, .9)`,
+        color: `rgba(210, 165, 85, .9)`,
         
         position: {
             x: levelSize.x / 2,
