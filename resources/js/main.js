@@ -21,7 +21,7 @@ const gameController = (function(){
 
     const drag = 0.045;
     const boxCoEff = 0.62;
-    const collisionDelay = 45;
+    const collisionDelay = 85;
     const randomVariance = 0.02;
     const horizontalBounds = 0.16;
 
@@ -103,7 +103,7 @@ const gameController = (function(){
     }
 
     const columnsProto = 20;
-    const rowsProto = 32; 
+    const rowsProto = 36; 
     const cell = {
         width: levelSize.x / columnsProto,
         height: levelSize.y / rowsProto
@@ -326,15 +326,17 @@ const gameController = (function(){
             for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
                 for (let col = 0; col < columnsProto; col++) {
-                    if (row > 2 && row < 12) {
+                    if (row > 2 && row < 14) {
                         if (col > 2 && col < columnsProto - 2) {
-                            
+                            if(!(row % 5 === 0 & col % 6 === 0)) {    
                             let x = Math.floor(cell.width * col);
                             let y = Math.floor(cell.height * row);
                             
                             let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
                             cellsRow.push(tBlock);
-                        
+                            } else {
+                            cellsRow.push(false);    
+                            }
                         } else {
                             cellsRow.push(false);
                         }
