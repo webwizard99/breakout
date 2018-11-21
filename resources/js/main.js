@@ -46,7 +46,7 @@ const gameController = (function(){
         console.log('takeDamage');
         if (val) {
             this.hp -= val;
-            this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 30);
+            this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 20);
             game.hasChanged = true;
         }
         if (this.hp <= 0) {
