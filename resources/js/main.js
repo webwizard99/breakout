@@ -103,7 +103,7 @@ const gameController = (function(){
     }
 
     const columnsProto = 20;
-    const rowsProto = 36; 
+    const rowsProto = 32; 
     const cell = {
         width: levelSize.x / columnsProto,
         height: levelSize.y / rowsProto
