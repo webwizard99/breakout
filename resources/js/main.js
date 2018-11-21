@@ -5,20 +5,30 @@ const gameController = (function(){
     
     // game state object
     const game = {
+        cyclesSincePaddle: 0,
+        points: 0,
         started: true,
+        paused: false,
         level: 0,
         hasChanged: true,
         leftPress: false,
         rightPress: false,
-        isGameOver: false
+        isGameOver: false,
+        toggleRebound: false
     }
 
+    
+
     const drag = 0.045;
-    const boxCoEff = 0.09;
+    const boxCoEff = 0.62;
+    const collisionDelay = 0.45;
+    const randomVariance = 0.02;
     const horizontalBounds = 0.16;
 
+    blockHP = 10;
+
     // Block function constructor
-    const Block = function(width, hp, density, type, x, y) {
+    const Block = function(width, hp, density, type, x, y, row, col) {
         this.width = width;
         this.hp = hp;
         this.maxHp = hp;
@@ -28,26 +38,95 @@ const gameController = (function(){
             x: x,
             y: y
         }
+        this.row = row;
+        this.col = col;
     };
+
+    Block.prototype.takeDamage = function(val) {
+        console.log('takeDamage');
+        if (val) {
+            this.hp -= val;
+            this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 30);
+            game.hasChanged = true;
+        }
+        if (this.hp <= 0) {
+            this.die();
+        }
+    };
+
+    Block.prototype.die = function() {
+        game.points += 30;
+        levels[game.level][this.row][this.col] = false;
+        
+    }
+
+    const Collision = function() {
+        this.leftCollide = false;
+        this.rightCollide = false;
+        this.topCollide = false;
+        this.bottomCollide = false;
+    }
+
+    Collision.prototype.effectCollide = function() {
+        // If ball has rebounded already this frame, exit function
+        if (game.toggleRebound) return;
+        
+        if (this.leftCollide || this.rightCollide) {
+            reverseHorizontalVelocity();
+        }
+
+        if (this.topCollide || this.bottomCollide) {
+            reverseVerticalVelocity();
+        }
+
+        if (this.leftCollide || this.rightCollide || this.topCollide || this.bottomCollide) {
+            
+            game.toggleRebound = true;
+            setTimeout(function(){
+                game.toggleRebound = false;
+            }, collisionDelay);
+        }
+
+        
+
+        this.leftCollide = false;
+        this.rightCollide = false;
+        this.topCollide = false;
+        this.bottomCollide = false;
+    }
 
 
     // Base Level Size
-    let levelSize = {
+    const levelSize = {
         x: 640,
         y: 480
+    }
+
+    const columnsProto = 20;
+    const rowsProto = 24; 
+    const cell = {
+        width: levelSize.x / columnsProto,
+        height: levelSize.y / rowsProto
+    }
+
+    const blockProto = {
+        width: cell.width * 0.9,
+        height: cell.height * 0.65
     }
 
     // ball object
     let ball = {
         position: {
-            x: 200,
-            y: 400
+            x: levelSize.x / 2,
+            y: levelSize.y - 40
         },
 
         velocity: {
             x: 2,
             y: 2
+            
         },
+
         
         size: 6,
         damage: 3,
@@ -58,8 +137,8 @@ const gameController = (function(){
         color: `rgba(80, 110, 80, .9)`,
         
         position: {
-            x: 200,
-            y: 410,
+            x: levelSize.x / 2,
+            y: levelSize.y - 30
         },
 
         velocity: 0,
@@ -73,24 +152,93 @@ const gameController = (function(){
         maxSpeed: 3.5
     }
 
-    checkColision = function(x, y, w, h) {
+    startRandom = function() {
+        return (Math.random() * 3);
+    }
+    
+    randomRub = function() {
+        const handicap = game.cyclesSincePaddle / 10000;
+        const randomx = Math.random() * randomVariance * handicap;
+        const randomy = Math.random() * randomVariance * handicap;
+        addBallVelocity('x', randomx - (randomVariance / 2));
+        addBallVelocity('y', randomy - (randomVariance / 2));
         
-        if (x <= (ball.position.x - (boxCoEff) + ((ball.size + boxCoEff))) && ((x + w + boxCoEff) >= (ball.position.x - (boxCoEff) - ((ball.size + boxCoEff))))) {
-            
-            if (y <= (ball.position.y + (boxCoEff) + ((ball.size + boxCoEff))) && ((y + h + boxCoEff) >= (ball.position.y - (boxCoEff) - ((ball.size + boxCoEff))))) {
+    }
+
+    checkCollision = function(x, y, w, h) {
+        
+        let collisionT = new Collision();
+        let collided = false;
+
+        if ((ball.position.x + ball.size)>= x && 
+            (ball.position.x - ball.size) < (x + w) && 
+            (ball.position.y + ball.size) > y &&
+            (ball.position.y - ball.size) < (y + h)) {
+            // Check for collision along left edge
+            if (Math.abs(ball.position.x - x) <= (ball.size * boxCoEff ) && ball.velocity.x > 0) {
                 
-                return true;
+                collisionT.leftCollide = true;
+                
+                collided = true;
+            }
+
+            // Check for collision along right edge
+            if (Math.abs(ball.position.x - (x + w)) <= (ball.size * boxCoEff) && ball.velocity.x < 0) {
+                
+                collisionT.rightCollide = true;
+                
+                collided = true;
+            }
+
+            // Check for collision along top edge
+            if (Math.abs(ball.position.y - y) <= (ball.size * boxCoEff) && ball.velocity.y < 0) {
+                
+                collisionT.topCollide = true;
+
+                collided = true;
+                
+            }
+
+            // Check for collision along bottom edge
+            if (Math.abs(ball.position.y - (y + h)) <= (ball.size * boxCoEff) && ball.velocity.y > 0) {
+                
+                collisionT.bottomCollide = true;
+                
+                collided = true;
+                
             }
         }
-        return false;
+
+        if (collided) {
+            return collisionT;
+        } else {
+            return false;
+        }
+
+        // if (x <= (ball.position.x - (boxCoEff) + ((ball.size + boxCoEff))) && ((x + w + boxCoEff) >= (ball.position.x - (boxCoEff) - ((ball.size + boxCoEff))))) {
+            
+        //     if (y <= (ball.position.y + (boxCoEff) + ((ball.size + boxCoEff))) && ((y + h + boxCoEff) >= (ball.position.y - (boxCoEff) - ((ball.size + boxCoEff))))) {
+                
+        //         return true;
+        //     }
+        // }
+        // return false;
     }
 
     reverseVerticalVelocity = function() {
         ball.velocity.y *= -1; 
+        randomRub();
     }
 
     reverseHorizontalVelocity = function() {
         ball.velocity.x *= -1;
+        randomRub();
+    }
+
+    addBallVelocity = function(axis, vel) {
+            
+        ball.velocity[axis] += vel;
+        
     }
 
     return {
@@ -118,22 +266,33 @@ const gameController = (function(){
                 reverseVerticalVelocity();
             } 
 
-            //check if ball is colliding with paddle
-            if (checkColision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y)) {
-                if (ball.position.y <= paddle.position.y) {
-                    reverseVerticalVelocity();
-                    ball.velocity.x += paddle.velocity / 6;
-                }
-            }
-
+            // Check for game over conditions
             if (ball.position.y >= (levelSize.y - ball.size /2)) {
                 game.started = false;
                 game.isGameOver = true;
             }
 
-        },
+            //check if ball is colliding with paddle
+            let paddleCollide = checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y);
+            if (!paddleCollide) {
+                return;
+            } else {
+                paddleCollide.effectCollide();
+                game.cyclesSincePaddle = 0;
+            }
 
-        
+            game.cyclesSincePaddle += 0;
+
+            // if (checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y)) {
+            //     if (ball.position.y <= paddle.position.y) {
+            //         reverseVerticalVelocity();
+            //         ball.velocity.x += paddle.velocity / 6;
+            //     }
+            // }
+
+            
+
+        }, 
 
         setPaddlePos: function(x, y) {
             
@@ -164,16 +323,16 @@ const gameController = (function(){
             // iterate through the rows and columns and
             // populate an area of blocks with boolean false
             // elsewise
-            for (let row = 0; row < rows; row++) {
+            for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
-                for (let col = 0; col < columns; col++) {
+                for (let col = 0; col < columnsProto; col++) {
                     if (row > 2 && row < 10) {
-                        if (col > 2 && col < columns - 2) {
+                        if (col > 2 && col < columnsProto - 2) {
                             if (row % 2 === 0 && col % 2 === 0) {    
-                                let x = Math.floor((levelSize.x / (levelSize.x / 36)) * col);
-                                let y = Math.floor((levelSize.y / (levelSize.y / 18)) * row);
+                                let x = Math.floor(cell.width * col);
+                                let y = Math.floor(cell.height * row);
                                 
-                                let tBlock = new Block(1, 10, 1, 'basic', x, y);
+                                let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
                                 cellsRow.push(tBlock);
                             } else {
                                 cellsRow.push(false);    
@@ -191,10 +350,6 @@ const gameController = (function(){
             
             levels.push(tLevel);
             //return tLevel;
-        },
-
-        getCell: function(x, y) {
-            return levels[game.level][x][y];
         },
 
         getLevelObjectForUI: function() {
@@ -282,29 +437,70 @@ const gameController = (function(){
             game.started = val;
         },
 
+        toggleRebound: function() {
+            game.toggleRebound = !game.toggleRebound;
+        },
+
         checkBlocks: function(){
+            
             // iterate through each row and then column of the current level object
             levels[game.level].forEach((row, nRow) => {
                 row.forEach((col, nCol) => {
                     
                     if (levels[game.level][nRow][nCol]) {
                         let tCell = levels[game.level][nRow][nCol];
-                        let x = Math.floor((levelSize.x / (levels[game.level][0].length + 1)) * nRow);
-                        let y = Math.floor((levelSize.y / (levels[game.level].length + 1)) * nCol);
-                        let w = Math.floor((levels[game.level][nCol][nRow].width * ((640 / levels[game.level][0].length) * .8)))
-                        let h = 8;
+                        let x = Math.floor(cell.width * nCol);
+                        let y = Math.floor(cell.height * nRow);
+                        let w = Math.floor(blockProto.width);
+                        let h = blockProto.height;
                         
-                        if (checkColision(x, y, w, h)) {
-                            if (ball.position.x + ball.size < (x + horizontalBounds) ||
-                                ball.position.x - ball.size > (x - horizontalBounds)) {
-                                reverseHorizontalVelocity();
-                            } else {
-                                reverseVerticalVelocity();
-                            }
-                        };
+                        let blockCollide = checkCollision(x, y, w, h);
+
+                        if (!blockCollide) {
+                            return;
+                        } else {
+                            
+                            tCell.takeDamage(ball.damage);
+                            blockCollide.effectCollide();
+                        }
+
+                        // if (checkCollision(x, y, w, h)) {
+                        //     if (ball.position.x + ball.size < (x + horizontalBounds) ||
+                        //         ball.position.x - ball.size > (x - horizontalBounds)) {
+                        //         reverseHorizontalVelocity();
+                        //     } else {
+                        //         reverseVerticalVelocity();
+                        //     }
+                        // };
                     }
                 });
             });
+        },
+
+        getColumnsProto: function() {
+            return columnsProto;
+        },
+
+        getRowsProto: function() {
+            return rowsProto;
+        },
+
+        getBlockProto: function() {
+            return blockProto;
+        },
+
+        getCell: function() {
+            return cell;
+        },
+
+
+
+        setToggleRebound: function(val){
+            game.toggleRebound = val;
+        },
+
+        getScore: function() {
+            return game.points;
         },
 
         test: function() {
@@ -321,7 +517,8 @@ const gameController = (function(){
 const UIController = (function(){
     const DOMStrings = {
         canvas: `#myCanvas`,
-        container: `#mainContainer`
+        container: `#mainContainer`,
+        score: `#score`
     };
 
     const levelThemes = [
@@ -345,8 +542,14 @@ const UIController = (function(){
            return DOMStrings;
         },
 
+        drawBox: function(color, x, y, w, h) {
+            const canvasRef = document.querySelector(DOMStrings.canvas);
+            const CTX = canvasRef.getContext("2d");
+            drawRect(CTX, color, x, y, h, w);
+        },
+        
         // draw blocks on canvas
-        drawCanvas: function(CTX) {
+        drawCanvas: function(CTX, blockProtoT, cellT) {
             
             const canvasRef = document.querySelector(DOMStrings.canvas);
             
@@ -357,9 +560,14 @@ const UIController = (function(){
 
                     
                     if (currentLevel[col][row]) {
+                        
+                        let x = Math.floor(cellT.width * row);
+                        let y = Math.floor(cellT.height * col);
+                        let w = Math.floor(blockProtoT.width);
+                        let h = blockProtoT.height;
                         const posThis = {
-                            x: currentLevel[col][row].position.x,
-                            y: currentLevel[col][row].position.y
+                            x: x,
+                            y: y
                         };
 
                         const colorT = levelThemes[0].basic.replace('%alpha', (currentLevel[col][row].opacity / 100).toString());
@@ -368,9 +576,8 @@ const UIController = (function(){
                             colorT,
                             posThis.x,
                             posThis.y,
-                            8,
-                            Math.floor((currentLevel[col][row].width * ((640 / currentLevel[0].length) * .8))),
-                            );
+                            h,
+                            w);
                     }
                 }
                 
@@ -398,6 +605,11 @@ const UIController = (function(){
         // UI module
         setCurrentLevel: function(level) {
             currentLevel = level;
+        },
+
+        setScore: function(score) {
+            const scoreEle = document.querySelector(DOMStrings.score);
+            scoreEle.innerText = score;
         },
 
         test: function() {
@@ -458,10 +670,10 @@ const Controller = (function(gameCtrl, UICtrl){
     startGame = function() {
         const DOM = UICtrl.getDomStrings();
         const mCanvas = document.querySelector(DOM.canvas);
-
+        const ball = gameCtrl.getBall();
 
         gameCtrl.createBasicLevel();
-        gameCtrl.setBallPos(mCanvas.width /2, mCanvas.height -30);
+        gameCtrl.setBallPos(ball.position.x, ball.position.y);
     }
 
     // draw the player ball
@@ -480,6 +692,9 @@ const Controller = (function(gameCtrl, UICtrl){
 
     // handle an update frame called by setInterval
     update = function() {
+        // set any frame-based game state variables
+        //gameCtrl.setToggleRebound(false);
+        
         // link to the Canvas DOM object
         const DOM = UICtrl.getDomStrings();
         const mCanvas = document.querySelector(DOM.canvas);
@@ -494,6 +709,7 @@ const Controller = (function(gameCtrl, UICtrl){
         // clear the canvas
         ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
 
+        // check for Game Over
         if (gameCtrl.isGameOver()) {
             alert('Game Over!');
             document.location.reload();
@@ -505,12 +721,15 @@ const Controller = (function(gameCtrl, UICtrl){
         // check if the state of the level has changed
         const needsUpdate = gameCtrl.getLevelState();
         if (needsUpdate) {
+            UICtrl.setScore(gameCtrl.getScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
             gameCtrl.setLevelState(false);
         }
 
         // draw blocks on <Canvas> element
-        UICtrl.drawCanvas(ctx);
+        const blockProtoT = gameCtrl.getBlockProto();
+        const cellT = gameCtrl.getCell();
+        UICtrl.drawCanvas(ctx, blockProtoT, cellT);
 
         // draw the ball and paddle
         drawBall(ctx, ball);

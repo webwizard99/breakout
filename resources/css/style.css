@@ -13,11 +13,11 @@ canvas {
 #mainContainer {
     height: 100vh;
     width: 100vw;
-    background: linear-gradient(0.1turn, rgba(100, 60, 60, .6), rgba(60, 60, 100, .6));
+    background: linear-gradient(0.1turn, rgba(180, 140, 140, .98), rgba(140, 140, 180, .98));
 }
 
 #title {
-    color: rgba(205, 225, 120, .95);
+    color: rgba(225, 245, 160, .98);
     text-align: center;
     font-size: 2rem;
 
@@ -27,4 +27,17 @@ canvas {
                 -1px 1px 2px rgba(30, 30, 30, .8),
                 1px -1px 2px rgba(30, 30, 30, .8),
                 -1px -1px 2px rgba(30, 30, 30, .8);
+}
+
+#score {
+    font-family: sans-serif;
+    color: rgb(240, 240, 240);
+    font-size: 3rem;
+    padding-top: 2rem;
+    margin-bottom: 1rem;
+    margin-left: 32vw;
+    text-shadow: 1px 1px 5px rgba(30, 30, 30, .4),
+                -1px 1px 5px rgba(30, 30, 30, .4),
+                1px -1px 5px rgba(30, 30, 30, .4),
+                -1px -1px 5px rgba(30, 30, 30, .4);
 }
