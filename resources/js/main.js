@@ -21,7 +21,7 @@ const gameController = (function(){
 
     const drag = 0.045;
     const boxCoEff = 0.62;
-    const collisionDelay = 0.45;
+    const collisionDelay = 45;
     const randomVariance = 0.02;
     const horizontalBounds = 0.16;
 
@@ -103,15 +103,15 @@ const gameController = (function(){
     }
 
     const columnsProto = 20;
-    const rowsProto = 26; 
+    const rowsProto = 32; 
     const cell = {
         width: levelSize.x / columnsProto,
         height: levelSize.y / rowsProto
     }
 
     const blockProto = {
-        width: cell.width * 0.9,
-        height: cell.height * 0.65
+        width: cell.width * 0.95,
+        height: cell.height * 0.90
     }
 
     // ball object
@@ -326,7 +326,7 @@ const gameController = (function(){
             for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
                 for (let col = 0; col < columnsProto; col++) {
-                    if (row > 2 && row < 10) {
+                    if (row > 2 && row < 12) {
                         if (col > 2 && col < columnsProto - 2) {
                             
                             let x = Math.floor(cell.width * col);
