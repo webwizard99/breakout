@@ -8,6 +8,8 @@ canvas {
     background: #eee;
     display: block;
     margin: 0 auto;
+    box-shadow: 1px 1px 15px rgba(30, 30, 30, .4);
+    border: 1px solid rgba(30, 30, 30, .6);
 }
 
 #mainContainer {

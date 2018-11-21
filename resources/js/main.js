@@ -25,7 +25,7 @@ const gameController = (function(){
     const randomVariance = 0.02;
     const horizontalBounds = 0.16;
 
-    blockHP = 10;
+    blockHP = 8;
 
     // Block function constructor
     const Block = function(width, hp, density, type, x, y, row, col) {
@@ -328,15 +328,13 @@ const gameController = (function(){
                 for (let col = 0; col < columnsProto; col++) {
                     if (row > 2 && row < 10) {
                         if (col > 2 && col < columnsProto - 2) {
-                            if (row % 2 === 0 && col % 2 === 0) {    
-                                let x = Math.floor(cell.width * col);
-                                let y = Math.floor(cell.height * row);
-                                
-                                let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
-                                cellsRow.push(tBlock);
-                            } else {
-                                cellsRow.push(false);    
-                            }
+                            
+                            let x = Math.floor(cell.width * col);
+                            let y = Math.floor(cell.height * row);
+                            
+                            let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
+                            cellsRow.push(tBlock);
+                        
                         } else {
                             cellsRow.push(false);
                         }
