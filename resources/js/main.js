@@ -20,13 +20,15 @@ const gameController = (function(){
     
 
     const drag = 0.045;
-    const boxCoEff = 0.62;
+    const boxCoEff = 1.06;
     const collisionDelay = 85;
     const randomVariance = 0.02;
     const horizontalBounds = 0.16;
 
     blockHP = 8;
 
+
+    //let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
     // Block function constructor
     const Block = function(width, hp, density, type, x, y, row, col) {
         this.width = width;
@@ -165,47 +167,80 @@ const gameController = (function(){
         
     }
 
-    checkCollision = function(x, y, w, h) {
+    checkCollision = function(isPaddle, x, y, w, h, cell) {
         
         let collisionT = new Collision();
         let collided = false;
 
-        if ((ball.position.x + ball.size)>= x && 
+        if ((ball.position.x + ball.size) > x && 
             (ball.position.x - ball.size) < (x + w) && 
             (ball.position.y + ball.size) > y &&
             (ball.position.y - ball.size) < (y + h)) {
+
+                console.dir(cell);
             // Check for collision along left edge
             if (Math.abs(ball.position.x - x) <= (ball.size * boxCoEff ) && ball.velocity.x > 0) {
                 
-                collisionT.leftCollide = true;
+                // Check if there's a block adjacent on the side of the block closest to the ball
+                if (isPaddle) {
+                    collisionT.leftCollide = true;
+            
+                    collided = true;
+                } else if((!(levels[game.level][cell.y][cell.x - 1]))) {
                 
-                collided = true;
+                    collisionT.leftCollide = true;
+            
+                    collided = true;
+                    
+                } 
+                
             }
 
             // Check for collision along right edge
             if (Math.abs(ball.position.x - (x + w)) <= (ball.size * boxCoEff) && ball.velocity.x < 0) {
                 
-                collisionT.rightCollide = true;
+                if (isPaddle) {
+                    collisionT.rightCollide = true;
+            
+                    collided = true;
+                } else if((!(levels[game.level][cell.y][cell.x + 1]))) {
+                    
+                        collisionT.rightCollide = true;
                 
-                collided = true;
+                        collided = true;
+                    
+                } 
+                
             }
 
             // Check for collision along top edge
             if (Math.abs(ball.position.y - y) <= (ball.size * boxCoEff) && ball.velocity.y < 0) {
                 
-                collisionT.topCollide = true;
+                if (isPaddle) {
+                    collisionT.topCollide = true;
+            
+                    collided = true;
+                } else if((!(levels[game.level][cell.y - 1][cell.x]))) {
 
-                collided = true;
+                    collisionT.topCollide = true;
+
+                    collided = true;
+                }
                 
             }
 
             // Check for collision along bottom edge
             if (Math.abs(ball.position.y - (y + h)) <= (ball.size * boxCoEff) && ball.velocity.y > 0) {
                 
-                collisionT.bottomCollide = true;
-                
-                collided = true;
-                
+                if (isPaddle) {
+                    collisionT.bottomCollide = true;
+            
+                    collided = true;
+                } else if((!(levels[game.level][cell.y + 1][cell.x]))) {
+                    collisionT.bottomCollide = true;
+                    
+                    collided = true;
+                }
             }
         }
 
@@ -272,8 +307,16 @@ const gameController = (function(){
                 game.isGameOver = true;
             }
 
+
             //check if ball is colliding with paddle
-            let paddleCollide = checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y);
+            let paddleCollide = checkCollision(true, paddle.position.x, 
+                paddle.position.y, 
+                paddle.size.x, 
+                paddle.size.y, 
+                {
+                    row: rowsProto -2,
+                    col: Math.floor((columnsProto / 2) - 1)
+                });
             if (!paddleCollide) {
                 return;
             } else {
@@ -361,8 +404,8 @@ const gameController = (function(){
                             width: cell.width,
                             type: cell.type,
                             position: {
-                                x: cell.position.x,
-                                y: cell.position.y
+                                y: cell.position.x,
+                                x: cell.position.y
                             },
                             opacity: Math.floor(((cell.hp/ cell.maxHp) * 70) + 30)
                         }
@@ -443,8 +486,14 @@ const gameController = (function(){
 
         checkBlocks: function(){
             
-            // iterate through each row and then column of the current level object
+            let masterCollide = new Collision();
+            
+            // for (let nRow = startY; nRow < endY; nRow += yInc) {
+            //     console.log(nRow);
+            //     row = levels[game.level][nRow];
             levels[game.level].forEach((row, nRow) => {
+                // for (let nCol = startX; nCol < endX; nCol += xInc) {
+                    
                 row.forEach((col, nCol) => {
                     
                     if (levels[game.level][nRow][nCol]) {
@@ -454,14 +503,31 @@ const gameController = (function(){
                         let w = Math.floor(blockProto.width);
                         let h = blockProto.height;
                         
-                        let blockCollide = checkCollision(x, y, w, h);
+                        let blockCollide = checkCollision(false, x, y, w, h, 
+                            {
+                                x: tCell.col,
+                                y: tCell.row
+                            });
+
+                        if (blockCollide.leftCollide) {
+                            masterCollide.leftCollide = true;
+                        }
+                        if (blockCollide.rightCollide) {
+                            masterCollide.rightCollide = true;
+                        }
+                        if (blockCollide.topCollide) {
+                            masterCollide.topCollide = true;
+                        }
+                        if (blockCollide.bottomCollide) {
+                            masterCollide.bottomCollide = true;
+                        }
 
                         if (!blockCollide) {
                             return;
                         } else {
                             
                             tCell.takeDamage(ball.damage);
-                            blockCollide.effectCollide();
+                            //blockCollide.effectCollide();
                         }
 
                         // if (checkCollision(x, y, w, h)) {
@@ -475,6 +541,17 @@ const gameController = (function(){
                     }
                 });
             });
+
+            if (masterCollide.topCollide && masterCollide.bottomCollide) {
+                masterCollide.topCollide = false;
+                masterCollide.bottomCollide = false;
+            }
+
+            if (masterCollide.rightCollide && masterCollide.leftCollide) {
+                masterCollide.rightCollide = false;
+                masterCollide.leftCollide = false;
+            }
+            masterCollide.effectCollide();
         },
 
         getColumnsProto: function() {
