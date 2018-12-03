@@ -487,6 +487,7 @@ const gameController = (function(){
         checkBlocks: function(){
             
             let masterCollide = new Collision();
+            let allCollides = [];
             
             // for (let nRow = startY; nRow < endY; nRow += yInc) {
             //     console.log(nRow);
@@ -522,11 +523,19 @@ const gameController = (function(){
                             masterCollide.bottomCollide = true;
                         }
 
+                        if (blockCollide.leftCollide ||
+                            blockCollide.rightCollide ||
+                            blockCollide.topCollide ||
+                            blockCollide.bottomCollide) {
+                                allCollides.push(tCell);
+                        }
+                        
+
                         if (!blockCollide) {
                             return;
                         } else {
                             
-                            tCell.takeDamage(ball.damage);
+                            // tCell.takeDamage(ball.damage);
                             //blockCollide.effectCollide();
                         }
 
@@ -552,6 +561,12 @@ const gameController = (function(){
                 masterCollide.leftCollide = false;
             }
             masterCollide.effectCollide();
+
+            if (allCollides) {
+                    allCollides.forEach( tCell => {
+                        tCell.takeDamage(ball.damage);
+                });
+            }
         },
 
         getColumnsProto: function() {
