@@ -6,6 +6,7 @@ const gameController = (function(){
     // game state object
     const game = {
         cyclesSincePaddle: 0,
+        updateCyclesSec: 100,
         points: 0,
         started: true,
         paused: false,
@@ -262,12 +263,12 @@ const gameController = (function(){
 
     reverseVerticalVelocity = function() {
         ball.velocity.y *= -1; 
-        randomRub();
+        // randomRub();
     }
 
     reverseHorizontalVelocity = function() {
         ball.velocity.x *= -1;
-        randomRub();
+        // randomRub();
     }
 
     addBallVelocity = function(axis, vel) {
@@ -283,6 +284,10 @@ const gameController = (function(){
 
         getPaddle: function() {
             return paddle;
+        },
+
+        getUpdateRate: function() {
+            return (Math.floor(1000 / game.updateCyclesSec));
         },
 
         setBallPos: function(x, y) {
@@ -321,10 +326,10 @@ const gameController = (function(){
                 return;
             } else {
                 paddleCollide.effectCollide();
-                game.cyclesSincePaddle = 0;
+                // game.cyclesSincePaddle = 0;
             }
 
-            game.cyclesSincePaddle += 0;
+            // game.cyclesSincePaddle += 0;
 
             // if (checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y)) {
             //     if (ball.position.y <= paddle.position.y) {
@@ -369,7 +374,7 @@ const gameController = (function(){
             for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
                 for (let col = 0; col < columnsProto; col++) {
-                    if (row > 2 && row < 14) {
+                    if (row > 2 && row < 11) {
                         if (col > 2 && col < columnsProto - 2) {
                             if(!(row % 5 === 0 & col % 6 === 0)) {    
                             let x = Math.floor(cell.width * col);
@@ -863,7 +868,7 @@ const Controller = (function(gameCtrl, UICtrl){
             // set the starting conditions for a game
             startGame();
 
-            setInterval(update, 10);
+            setInterval(update, gameCtrl.getUpdateRate());
             
         }
     }

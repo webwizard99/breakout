@@ -19,10 +19,10 @@ canvas {
 }
 
 #title {
-    color: rgba(225, 245, 160, .98);
+    color: rgba(245, 140, 180, .98);
     text-align: center;
     font-size: 2.5rem;
-    font-weight: 600;
+    font-weight: 400;
     font-family: 'Bungee', cursive;
 
     padding-top: 1rem;
