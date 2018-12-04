@@ -24,9 +24,9 @@ const gameController = (function(){
     const boxCoEff = 1.06;
     const collisionDelay = 85;
     const randomVariance = 0.02;
-    const horizontalBounds = 0.16;
+    // const horizontalBounds = 0.16;
 
-    blockHP = 8;
+    const blockHP = 5;
 
 
     //let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
@@ -46,7 +46,7 @@ const gameController = (function(){
     };
 
     Block.prototype.takeDamage = function(val) {
-        console.log('takeDamage');
+        
         if (val) {
             this.hp -= val;
             this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 20);
@@ -58,7 +58,7 @@ const gameController = (function(){
     };
 
     Block.prototype.die = function() {
-        game.points += 30;
+        game.points += 30 + Math.floor(game.cyclesSincePaddle / game.updateCyclesSec);
         levels[game.level][this.row][this.col] = false;
         
     }
@@ -105,7 +105,7 @@ const gameController = (function(){
         y: 480
     }
 
-    const columnsProto = 20;
+    const columnsProto = 16;
     const rowsProto = 32; 
     const cell = {
         width: levelSize.x / columnsProto,
@@ -178,7 +178,7 @@ const gameController = (function(){
             (ball.position.y + ball.size) > y &&
             (ball.position.y - ball.size) < (y + h)) {
 
-                console.dir(cell);
+                
             // Check for collision along left edge
             if (Math.abs(ball.position.x - x) <= (ball.size * boxCoEff ) && ball.velocity.x > 0) {
                 
@@ -263,12 +263,12 @@ const gameController = (function(){
 
     reverseVerticalVelocity = function() {
         ball.velocity.y *= -1; 
-        // randomRub();
+        randomRub();
     }
 
     reverseHorizontalVelocity = function() {
         ball.velocity.x *= -1;
-        // randomRub();
+        randomRub();
     }
 
     addBallVelocity = function(axis, vel) {
@@ -323,13 +323,16 @@ const gameController = (function(){
                     col: Math.floor((columnsProto / 2) - 1)
                 });
             if (!paddleCollide) {
+                if (game.cyclesSincePaddle < 60000) {
+                    game.cyclesSincePaddle += 1;
+                }    
                 return;
             } else {
                 paddleCollide.effectCollide();
-                // game.cyclesSincePaddle = 0;
+                game.cyclesSincePaddle = 0;
             }
 
-            // game.cyclesSincePaddle += 0;
+            
 
             // if (checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y)) {
             //     if (ball.position.y <= paddle.position.y) {
@@ -374,7 +377,7 @@ const gameController = (function(){
             for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
                 for (let col = 0; col < columnsProto; col++) {
-                    if (row > 2 && row < 11) {
+                    if (row > 2 && row < 10) {
                         if (col > 2 && col < columnsProto - 2) {
                             if(!(row % 5 === 0 & col % 6 === 0)) {    
                             let x = Math.floor(cell.width * col);
