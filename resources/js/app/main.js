@@ -1,5 +1,12 @@
+// import Levels from '../utils/Levels';
+const Levels = {
+    one: [[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false],[false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false],[false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]],
+    two: [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5}],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false],[false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false],[false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5}],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]
+    
+};
+
 // Model for game calculations
-const gameController = (function(){
+const GameController = (function(){
     // array to hold all level objects
     const levels = [];
     
@@ -31,8 +38,9 @@ const gameController = (function(){
 
     //let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
     // Block function constructor
-    const Block = function(width, hp, density, type, x, y, row, col) {
+    const Block = function(width, color, hp, density, type, x, y, row, col) {
         this.width = width;
+        this.color = color;
         this.hp = hp;
         this.maxHp = hp;
         this.density = density;
@@ -109,13 +117,18 @@ const gameController = (function(){
     const rowsProto = 32; 
     const cell = {
         width: levelSize.x / columnsProto,
-        height: levelSize.y / rowsProto
+        height: levelSize.y / rowsProto,
+        
     }
 
     const blockProto = {
         width: cell.width * 0.95,
-        height: cell.height * 0.90
+        height: cell.height * 0.90,
+        offsetX: cell.width * 0.025,
+        offsetY: cell.height * 0.05
     }
+
+    
 
     // ball object
     let ball = {
@@ -295,14 +308,26 @@ const gameController = (function(){
             ball.position.y = y;
 
             // reverse horizontal velocity if out of bounds
-            if (ball.position.x <= (ball.size /2)
-            || ball.position.x >= (levelSize.x - ball.size /2)) {
+            if (ball.position.x <= (ball.size /2) * boxCoEff
+            || ball.position.x >= (levelSize.x - (ball.size /2 * boxCoEff))) {
+                if (ball.position.x <= (ball.size /2) * boxCoEff) {
+                    ball.position.x = (ball.size /2) * boxCoEff;
+                }
+                if (ball.position.x >= (levelSize.x - (ball.size /2 * boxCoEff))) {
+                    ball.position.x = (levelSize.x - (ball.size /2 * boxCoEff))
+                }
                 reverseHorizontalVelocity();
             } 
 
             // reverse vertical velocity if out of bounds
-            if (ball.position.y <= (ball.size /2)
-            || ball.position.y >= (levelSize.y - ball.size /2)) {
+            if (ball.position.y <= (ball.size /2) * boxCoEff
+            || ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff))) {
+                if (ball.position.y <= (ball.size /2) * boxCoEff) {
+                    ball.position.y = (ball.size /2) * boxCoEff;
+                }
+                if (ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff))) {
+                    ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff));
+                }
                 reverseVerticalVelocity();
             } 
 
@@ -368,31 +393,23 @@ const gameController = (function(){
 
         createBasicLevel: function() {
             let tLevel = [];
-            const columns = Math.floor(levelSize.x / 36);
-            const rows = Math.floor(levelSize.y / 18);
-            
+
+            let tImport = Levels.two;
+                        
             // iterate through the rows and columns and
             // populate an area of blocks with boolean false
             // elsewise
             for (let row = 0; row < rowsProto; row++) {
                 let cellsRow = [];
                 for (let col = 0; col < columnsProto; col++) {
-                    if (row > 2 && row < 10) {
-                        if (col > 2 && col < columnsProto - 2) {
-                            if(!(row % 5 === 0 & col % 6 === 0)) {    
+                    if (!tImport[row][col]) {
+                        cellsRow.push(false);
+                    } else {
                             let x = Math.floor(cell.width * col);
                             let y = Math.floor(cell.height * row);
-                            
-                            let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
+                            let tImportBlock = tImport[row][col];
+                            let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
                             cellsRow.push(tBlock);
-                            } else {
-                            cellsRow.push(false);    
-                            }
-                        } else {
-                            cellsRow.push(false);
-                        }
-                    } else {
-                        cellsRow.push(false);
                     }
                 }
 
@@ -411,6 +428,7 @@ const gameController = (function(){
                         return {
                             width: cell.width,
                             type: cell.type,
+                            color: cell.color,
                             position: {
                                 y: cell.position.x,
                                 x: cell.position.y
@@ -512,6 +530,8 @@ const gameController = (function(){
                         let w = Math.floor(blockProto.width);
                         let h = blockProto.height;
                         
+                        
+
                         let blockCollide = checkCollision(false, x, y, w, h, 
                             {
                                 x: tCell.col,
@@ -535,7 +555,10 @@ const gameController = (function(){
                             blockCollide.rightCollide ||
                             blockCollide.topCollide ||
                             blockCollide.bottomCollide) {
-                                allCollides.push(tCell);
+                            allCollides.push(tCell);
+                            // allCollides.forEach(damCollide => {
+                            //     damCollide.takeDamage();
+                            // })
                         }
                         
 
@@ -651,18 +674,18 @@ const UIController = (function(){
         // draw blocks on canvas
         drawCanvas: function(CTX, blockProtoT, cellT) {
             
-            const canvasRef = document.querySelector(DOMStrings.canvas);
             
-
-            for (let col = 0; col < currentLevel.length; col++) {
-                for (let row = 0; row < currentLevel[0].length; row++) {
+            for (let row = 0; row < currentLevel.length; row++) {
+                for (let col = 0; col < currentLevel[0].length; col++) {
                     
-
-                    
-                    if (currentLevel[col][row]) {
+                    if (!currentLevel[row][col]) {
                         
-                        let x = Math.floor(cellT.width * row);
-                        let y = Math.floor(cellT.height * col);
+                        
+                    } else {
+                        
+                        
+                        let x = Math.floor(cellT.width * col) + blockProtoT.offsetX;
+                        let y = Math.floor(cellT.height * row) + blockProtoT.offsetY;
                         let w = Math.floor(blockProtoT.width);
                         let h = blockProtoT.height;
                         const posThis = {
@@ -670,7 +693,10 @@ const UIController = (function(){
                             y: y
                         };
 
-                        const colorT = levelThemes[0].basic.replace('%alpha', (currentLevel[col][row].opacity / 100).toString());
+                        let tCBlock = currentLevel[row][col];
+
+                        const colorT = tCBlock.color.replace('%alpha', (tCBlock.opacity / 100).toString());
+                        // const colorT = `rgba(140, 40, 140, 1)`;
                         
                         drawRect(CTX,
                             colorT,
@@ -805,22 +831,23 @@ const Controller = (function(gameCtrl, UICtrl){
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
         
-
-        // clear the canvas
-        ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
-
         // check for Game Over
         if (gameCtrl.isGameOver()) {
             alert('Game Over!');
+            
             document.location.reload();
             gameCtrl.setGameOver(false);
         }
 
         if (!gameCtrl.isStarted()) return;
 
+        // clear the canvas
+        ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
+
         // check if the state of the level has changed
         const needsUpdate = gameCtrl.getLevelState();
         if (needsUpdate) {
+            
             UICtrl.setScore(gameCtrl.getScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
             gameCtrl.setLevelState(false);
@@ -875,6 +902,6 @@ const Controller = (function(gameCtrl, UICtrl){
             
         }
     }
-})(gameController, UIController);
+})(GameController, UIController);
 
 Controller.init();
