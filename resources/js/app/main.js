@@ -619,7 +619,7 @@ const UIController = (function(){
         canvas: `#myCanvas`,
         container: `#mainContainer`,
         score: `#score`,
-        LivesView: `.LivesView`
+        LivesView: `#LivesView`
     };
 
     const levelThemes = [
