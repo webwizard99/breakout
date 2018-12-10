@@ -168,11 +168,11 @@ const GameController = (function(){
         maxSpeed: 3.5
     }
 
-    startRandom = function() {
+    const startRandom = function() {
         return (Math.random() * 3);
     }
     
-    randomRub = function() {
+    const randomRub = function() {
         const handicap = game.cyclesSincePaddle / 10000;
         const randomx = Math.random() * randomVariance * handicap;
         const randomy = Math.random() * randomVariance * handicap;
@@ -181,7 +181,7 @@ const GameController = (function(){
         
     }
 
-    checkCollision = function(isPaddle, x, y, w, h, cell) {
+    const checkCollision = function(isPaddle, x, y, w, h, cell) {
         
         let collisionT = new Collision();
         let collided = false;
@@ -274,17 +274,17 @@ const GameController = (function(){
         // return false;
     }
 
-    reverseVerticalVelocity = function() {
+    const reverseVerticalVelocity = function() {
         ball.velocity.y *= -1; 
         randomRub();
     }
 
-    reverseHorizontalVelocity = function() {
+    const reverseHorizontalVelocity = function() {
         ball.velocity.x *= -1;
         randomRub();
     }
 
-    addBallVelocity = function(axis, vel) {
+    const addBallVelocity = function(axis, vel) {
             
         ball.velocity[axis] += vel;
         
@@ -652,7 +652,7 @@ const UIController = (function(){
     
     let currentLevel = [];
 
-    drawRect = function(ctx, fill, x, y, h, w) {
+    const drawRect = function(ctx, fill, x, y, h, w) {
         ctx.beginPath();
         ctx.rect(x, y, w, h);
         ctx.fillStyle = fill;
@@ -750,7 +750,7 @@ const UIController = (function(){
 
 const Controller = (function(gameCtrl, UICtrl){
     
-    setEventListeners = function() {
+    const setEventListeners = function() {
         const DOM = UICtrl.getDomStrings();
         document.addEventListener('keydown', (e) => {
             handleMovement(e);
@@ -760,7 +760,7 @@ const Controller = (function(gameCtrl, UICtrl){
         });
     }
 
-    handleMovement = function(event) {
+    const handleMovement = function(event) {
         if (!event.isTrusted) return;
         let paddle = gameCtrl.getPaddle();
         
@@ -778,7 +778,7 @@ const Controller = (function(gameCtrl, UICtrl){
 
     }
 
-    toggleMovement = function(event) {
+    const toggleMovement = function(event) {
         if (event.keyCode === 37) {
             if (gameCtrl.isLeftPress()) {
                 gameCtrl.setLeftPress(false);
@@ -793,7 +793,7 @@ const Controller = (function(gameCtrl, UICtrl){
     } 
     
     // start a new game
-    startGame = function() {
+    const startGame = function() {
         const DOM = UICtrl.getDomStrings();
         const mCanvas = document.querySelector(DOM.canvas);
         const ball = gameCtrl.getBall();
@@ -803,7 +803,7 @@ const Controller = (function(gameCtrl, UICtrl){
     }
 
     // draw the player ball
-    drawBall = function(ctx, ball) {
+    const drawBall = function(ctx, ball) {
         
         UICtrl.drawCircle(ctx,
             `#0095DD`,
@@ -812,12 +812,12 @@ const Controller = (function(gameCtrl, UICtrl){
             ball.size);
     }
 
-    drawPaddle = function(ctx, paddle) {
+    const drawPaddle = function(ctx, paddle) {
         UICtrl.drawPaddle(ctx, paddle);
     }
 
     // handle an update frame called by setInterval
-    update = function() {
+    const update = function() {
         // set any frame-based game state variables
         //gameCtrl.setToggleRebound(false);
         
