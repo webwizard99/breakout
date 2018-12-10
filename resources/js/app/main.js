@@ -1,9 +1,10 @@
 import Levels from '../utils/Levels.js';
-// const Levels = {
-//     one: [[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false],[false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false],[false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]],
-//     two: [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5}],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false],[false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false],[false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5}],[{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false],[false,{"type":"basic","color":"rgba(80, 100, 140, %alpha)","hp":5},false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]
-    
-// };
+
+// ---#######--#######--#######--#######
+// -------#######--#######--#######-----
+// --- <<< GameController >>>
+// -------#######--#######--#######-----
+// ---#######--#######--#######--#######
 
 // Model for game calculations
 const GameController = (function(){
@@ -15,6 +16,8 @@ const GameController = (function(){
         cyclesSincePaddle: 0,
         updateCyclesSec: 100,
         points: 0,
+        lives: 4,
+        maxLives: 4,
         started: true,
         paused: false,
         level: 0,
@@ -264,14 +267,6 @@ const GameController = (function(){
             return false;
         }
 
-        // if (x <= (ball.position.x - (boxCoEff) + ((ball.size + boxCoEff))) && ((x + w + boxCoEff) >= (ball.position.x - (boxCoEff) - ((ball.size + boxCoEff))))) {
-            
-        //     if (y <= (ball.position.y + (boxCoEff) + ((ball.size + boxCoEff))) && ((y + h + boxCoEff) >= (ball.position.y - (boxCoEff) - ((ball.size + boxCoEff))))) {
-                
-        //         return true;
-        //     }
-        // }
-        // return false;
     }
 
     const reverseVerticalVelocity = function() {
@@ -297,6 +292,10 @@ const GameController = (function(){
 
         getPaddle: function() {
             return paddle;
+        },
+
+        getLives: function() {
+            return game.lives;
         },
 
         getUpdateRate: function() {
@@ -357,17 +356,6 @@ const GameController = (function(){
                 game.cyclesSincePaddle = 0;
             }
 
-            
-
-            // if (checkCollision(paddle.position.x, paddle.position.y, paddle.size.x, paddle.size.y)) {
-            //     if (ball.position.y <= paddle.position.y) {
-            //         reverseVerticalVelocity();
-            //         ball.velocity.x += paddle.velocity / 6;
-            //     }
-            // }
-
-            
-
         }, 
 
         setPaddlePos: function(x, y) {
@@ -391,7 +379,7 @@ const GameController = (function(){
             return levelSize;
         },
 
-        createBasicLevel: function() {
+        uplinkLevels: function() {
             let tLevel = [];
 
             let tImport = Levels[1];
@@ -515,12 +503,9 @@ const GameController = (function(){
             let masterCollide = new Collision();
             let allCollides = [];
             
-            // for (let nRow = startY; nRow < endY; nRow += yInc) {
-            //     console.log(nRow);
-            //     row = levels[game.level][nRow];
+            
             levels[game.level].forEach((row, nRow) => {
-                // for (let nCol = startX; nCol < endX; nCol += xInc) {
-                    
+                                    
                 row.forEach((col, nCol) => {
                     
                     if (levels[game.level][nRow][nCol]) {
@@ -556,28 +541,13 @@ const GameController = (function(){
                             blockCollide.topCollide ||
                             blockCollide.bottomCollide) {
                             allCollides.push(tCell);
-                            // allCollides.forEach(damCollide => {
-                            //     damCollide.takeDamage();
-                            // })
+                            
                         }
                         
 
                         if (!blockCollide) {
                             return;
-                        } else {
-                            
-                            // tCell.takeDamage(ball.damage);
-                            //blockCollide.effectCollide();
-                        }
-
-                        // if (checkCollision(x, y, w, h)) {
-                        //     if (ball.position.x + ball.size < (x + horizontalBounds) ||
-                        //         ball.position.x - ball.size > (x - horizontalBounds)) {
-                        //         reverseHorizontalVelocity();
-                        //     } else {
-                        //         reverseVerticalVelocity();
-                        //     }
-                        // };
+                        } 
                     }
                 });
             });
@@ -637,11 +607,19 @@ const GameController = (function(){
 
 })();
 
+
+// ---#######--#######--#######--#######
+// -------#######--#######--#######-----
+// --- <<< UIController >>>
+// -------#######--#######--#######-----
+// ---#######--#######--#######--#######
+
 const UIController = (function(){
     const DOMStrings = {
         canvas: `#myCanvas`,
         container: `#mainContainer`,
-        score: `#score`
+        score: `#score`,
+        LivesView: `.LivesView`
     };
 
     const levelThemes = [
@@ -724,6 +702,22 @@ const UIController = (function(){
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
         },
 
+        drawLives: function(lives, paddle) {
+            const LivesView = document.querySelector(DOMStrings.LivesView);
+            LivesView.innerHTML = '';
+            for (let drawLife = 0; drawLife < lives; drawLife++) {
+                const tLifeView = document.createElement('div');
+                
+                tLifeView.classList.add('life');
+                const templatePaddle = paddle;
+                tLifeView.style.width = templatePaddle.width;
+                tLifeView.style.height = templatePaddle.height;
+                lLifeView.style.backgroundColor = templatePaddle.color;
+                LivesView.appendChild.tLifeView;
+            }
+
+        },
+
         // populates the currentLevel object in the
         // UIController so that level objects can be
         // rendered independently of the Model without
@@ -798,7 +792,9 @@ const Controller = (function(gameCtrl, UICtrl){
         const mCanvas = document.querySelector(DOM.canvas);
         const ball = gameCtrl.getBall();
 
-        gameCtrl.createBasicLevel();
+        gameCtrl.uplinkLevels();
+        const thisLives = gameCtrl.getLives();
+        UICtrl.drawLives(thisLives);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
     }
 

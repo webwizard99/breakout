@@ -46,3 +46,16 @@ canvas {
                 1px -1px rgba(30, 30, 30, .4),
                 -1px -1px rgba(30, 30, 30, .4);
 }
+
+#LivesView {
+    display: flex;
+    flex-wrap: wrap;
+    
+    height: 8rem;
+    width: 40vw;
+}
+
+.life {
+    margin-right: 1rem;
+    padding: 4px;
+}
