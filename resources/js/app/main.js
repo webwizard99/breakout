@@ -794,7 +794,8 @@ const Controller = (function(gameCtrl, UICtrl){
 
         gameCtrl.uplinkLevels();
         const thisLives = gameCtrl.getLives();
-        UICtrl.drawLives(thisLives);
+        const thisPaddle = gameCtrl.getPaddle();
+        UICtrl.drawLives(thisLives, thisPaddle);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
     }
 
