@@ -168,9 +168,9 @@ const GameController = (function(){
         maxSpeed: 3.5
     }
 
-    startRandom = function() {
-        return (Math.random() * 3);
-    }
+    // startRandom = function() {
+    //     return (Math.random() * 3);
+    // }
     
     randomRub = function() {
         const handicap = game.cyclesSincePaddle / 10000;
