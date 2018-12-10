@@ -394,7 +394,7 @@ const GameController = (function(){
         createBasicLevel: function() {
             let tLevel = [];
 
-            let tImport = Levels.two;
+            let tImport = Levels[1];
                         
             // iterate through the rows and columns and
             // populate an area of blocks with boolean false
