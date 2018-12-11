@@ -708,7 +708,7 @@ const UIController = (function(){
             LivesView.innerHTML = '';
             for (let drawLife = 0; drawLife < lives; drawLife++) {
                 const tLifeView = document.createElement('div');
-                
+                console.log(`paddle.size.x: ${paddle.size.x}, paddle.size.y: ${paddle.size.y}`)
                 tLifeView.classList.add('life');
                 tLifeView.style.width = paddle.size.x;
                 tLifeView.style.height = paddle.size.y;
