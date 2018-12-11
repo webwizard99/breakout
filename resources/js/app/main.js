@@ -713,7 +713,7 @@ const UIController = (function(){
                 tLifeView.style.width = `${paddle.size.x * displayAdjust}px`;
                 tLifeView.style.height = `${paddle.size.y * displayAdjust}px`;
                 tLifeView.style.backgroundColor = paddle.color;
-                
+                LivesView.appendChild(tLifeView);
             }
 
         },
