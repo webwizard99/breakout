@@ -714,6 +714,7 @@ const UIController = (function(){
                 tLifeView.style.height = `${paddle.size.y * displayAdjust}px`;
                 tLifeView.style.backgroundColor = paddle.color;
                 LivesView.appendChild(tLifeView);
+                console.dir(LivesView);
             }
 
         },
