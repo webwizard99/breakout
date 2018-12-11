@@ -25,7 +25,15 @@ const GameController = (function(){
         leftPress: false,
         rightPress: false,
         isGameOver: false,
-        toggleRebound: false
+        toggleRebound: false,
+        startPos: {
+            x: levelSize.x / 2,
+            y: levelSize.y - 40
+        },
+        startVel: {
+            x: 2,
+            y: 2
+        }
     }
 
     
@@ -296,6 +304,10 @@ const GameController = (function(){
 
         getLives: function() {
             return game.lives;
+        },
+
+        setLives: function(tLives) {
+            game.lives = tLives;
         },
 
         getUpdateRate: function() {
@@ -834,9 +846,15 @@ const Controller = (function(gameCtrl, UICtrl){
         
         // check for Game Over
         if (gameCtrl.isGameOver()) {
-            //alert('Game Over!');
+            const lives = gameCtrl.getLives();
+            if (lives <=0) {
+                alert('Game Over!');
             
-            //document.location.reload();
+                document.location.reload();
+            } else {
+                gameCtrl.setLives(lives -1);
+                gameCtrl.setLevelState(true);
+            }
             gameCtrl.setGameOver(false);
         }
 
@@ -851,6 +869,7 @@ const Controller = (function(gameCtrl, UICtrl){
             
             UICtrl.setScore(gameCtrl.getScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
+            UICtrl.drawLives(thisLives, thisPaddle);
             gameCtrl.setLevelState(false);
         }
 
