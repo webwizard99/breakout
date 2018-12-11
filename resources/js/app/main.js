@@ -708,23 +708,18 @@ const UIController = (function(){
             LivesView.innerHTML = '';
             for (let drawLife = 0; drawLife < lives; drawLife++) {
                 const tLifeView = document.createElement('div');
-                console.log(`paddle.size.x: ${paddle.size.x}, paddle.size.y: ${paddle.size.y}`)
                 tLifeView.classList.add('life');
-                tLifeView.style.width = `${paddle.size.x}px`;
-                tLifeView.style.height = `${paddle.size.y}px`;
+                const displayAdjust = 0.75;
+                tLifeView.style.width = `${paddle.size.x * displayAdjust}px`;
+                tLifeView.style.height = `${paddle.size.y * displayAdjust}px`;
                 tLifeView.style.backgroundColor = paddle.color;
-                console.log(tLifeView);
-                LivesView.appendChild(tLifeView);
-                console.log(LivesView);
+                
             }
 
         },
 
         // populates the currentLevel object in the
-        // UIController so that level objects can be
-        // rendered independently of the Model without
-        // sending too much information to the
-        // UI module
+        // UIController
         setCurrentLevel: function(level) {
             currentLevel = level;
         },
@@ -743,6 +738,11 @@ const UIController = (function(){
 })();
 
 
+// ---#######--#######--#######--#######
+// -------#######--#######--#######-----
+// --- <<< Controller >>>
+// -------#######--#######--#######-----
+// ---#######--#######--#######--#######
 
 const Controller = (function(gameCtrl, UICtrl){
     
@@ -796,7 +796,7 @@ const Controller = (function(gameCtrl, UICtrl){
 
         gameCtrl.uplinkLevels();
         const thisLives = gameCtrl.getLives();
-        console.dir(thisLives);
+        
         const thisPaddle = gameCtrl.getPaddle();
         UICtrl.drawLives(thisLives, thisPaddle);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
