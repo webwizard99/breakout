@@ -710,8 +710,8 @@ const UIController = (function(){
                 const tLifeView = document.createElement('div');
                 
                 tLifeView.classList.add('life');
-                tLifeView.style.width = paddle.width;
-                tLifeView.style.height = paddle.height;
+                tLifeView.style.width = paddle.size.x;
+                tLifeView.style.height = paddle.size.y;
                 tLifeView.style.backgroundColor = paddle.color;
                 console.log(tLifeView);
                 LivesView.innerHTML += tLifeView;

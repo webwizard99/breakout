@@ -52,7 +52,8 @@ canvas {
     flex-wrap: wrap;
     
     height: 8rem;
-    width: 40vw;
+    width: 60vw;
+    margin:auto;
 }
 
 .life {
