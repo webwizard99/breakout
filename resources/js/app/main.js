@@ -833,9 +833,9 @@ const Controller = (function(gameCtrl, UICtrl){
         
         // check for Game Over
         if (gameCtrl.isGameOver()) {
-            alert('Game Over!');
+            //alert('Game Over!');
             
-            document.location.reload();
+            //document.location.reload();
             gameCtrl.setGameOver(false);
         }
 
