@@ -704,16 +704,18 @@ const UIController = (function(){
 
         drawLives: function(lives, paddle) {
             const LivesView = document.querySelector(DOMStrings.LivesView);
+            console.dir(LivesView);
             LivesView.innerHTML = '';
             for (let drawLife = 0; drawLife < lives; drawLife++) {
                 const tLifeView = document.createElement('div');
                 
                 tLifeView.classList.add('life');
-                const templatePaddle = paddle;
-                tLifeView.style.width = templatePaddle.width;
-                tLifeView.style.height = templatePaddle.height;
-                tLifeView.style.backgroundColor = templatePaddle.color;
+                tLifeView.style.width = paddle.width;
+                tLifeView.style.height = paddle.height;
+                tLifeView.style.backgroundColor = paddle.color;
+                console.dir(tLifeView);
                 LivesView.appendChild.tLifeView;
+                console.dir(LivesView);
             }
 
         },
@@ -794,6 +796,7 @@ const Controller = (function(gameCtrl, UICtrl){
 
         gameCtrl.uplinkLevels();
         const thisLives = gameCtrl.getLives();
+        console.dir(thisLives);
         const thisPaddle = gameCtrl.getPaddle();
         UICtrl.drawLives(thisLives, thisPaddle);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
@@ -830,9 +833,9 @@ const Controller = (function(gameCtrl, UICtrl){
         
         // check for Game Over
         if (gameCtrl.isGameOver()) {
-            alert('Game Over!');
+            //alert('Game Over!');
             
-            document.location.reload();
+            //document.location.reload();
             gameCtrl.setGameOver(false);
         }
 
