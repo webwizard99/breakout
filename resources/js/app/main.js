@@ -310,6 +310,18 @@ const GameController = (function(){
             game.lives = tLives;
         },
 
+        getStartPos: function() {
+            return game.startPos;
+        },
+
+        getIsStarted: function() {
+            return game.started;
+        },
+
+        setIsStarted: function(state) {
+            game.started = state;
+        },
+
         getUpdateRate: function() {
             return (Math.floor(1000 / game.updateCyclesSec));
         },
@@ -834,6 +846,12 @@ const Controller = (function(gameCtrl, UICtrl){
         // set any frame-based game state variables
         //gameCtrl.setToggleRebound(false);
         
+        // if game state is not started, exit update
+        if (!gameCtrl.getIsStarted()) {
+            return;
+        }
+
+
         // link to the Canvas DOM object
         const DOM = UICtrl.getDomStrings();
         const mCanvas = document.querySelector(DOM.canvas);
@@ -854,6 +872,10 @@ const Controller = (function(gameCtrl, UICtrl){
             } else {
                 gameCtrl.setLives(lives -1);
                 gameCtrl.setLevelState(true);
+                const startPos = gameCtrl.getStartPos();
+                gameCtrl.setBallPos(startPos.x, startPos.y);
+                gameCtrl.setIsStarted(false);
+                setTimeout(function(){ gameCtrl.setIsStarted(true); }, 1200)
             }
             gameCtrl.setGameOver(false);
         }
