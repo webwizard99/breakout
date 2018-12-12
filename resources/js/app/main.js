@@ -11,6 +11,13 @@ const GameController = (function(){
     // array to hold all level objects
     const levels = [];
     
+
+    // Base Level Size
+    const levelSize = {
+        x: 640,
+        y: 480
+    }
+    
     // game state object
     const game = {
         cyclesSincePaddle: 0,
@@ -118,11 +125,7 @@ const GameController = (function(){
     }
 
 
-    // Base Level Size
-    const levelSize = {
-        x: 640,
-        y: 480
-    }
+    
 
     const columnsProto = 16;
     const rowsProto = 32; 
