@@ -877,9 +877,10 @@ const Controller = (function(gameCtrl, UICtrl){
                 const startPos = gameCtrl.getStartPos();
                 gameCtrl.setBallPos(startPos.x, startPos.y);
                 gameCtrl.setIsStarted(false);
+                gameCtrl.setGameOver(false); 
                 setTimeout(function(){ 
                     gameCtrl.setIsStarted(true);
-                    gameCtrl.setGameOver(false); 
+                    
                 }, 1200);
             }
             gameCtrl.setGameOver(false);
