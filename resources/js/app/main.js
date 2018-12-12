@@ -359,7 +359,7 @@ const GameController = (function(){
 
             // Check for game over conditions
             if (ball.position.y >= (levelSize.y - ball.size /2)) {
-                game.started = false;
+                // game.started = false;
                 game.isGameOver = true;
             }
 
