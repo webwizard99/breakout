@@ -17,7 +17,7 @@ const GameController = (function(){
         x: 640,
         y: 480
     }
-    
+
     // game state object
     const game = {
         cyclesSincePaddle: 0,
@@ -824,7 +824,6 @@ const Controller = (function(gameCtrl, UICtrl){
 
         gameCtrl.uplinkLevels();
         const thisLives = gameCtrl.getLives();
-        
         const thisPaddle = gameCtrl.getPaddle();
         UICtrl.drawLives(thisLives, thisPaddle);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
@@ -894,6 +893,9 @@ const Controller = (function(gameCtrl, UICtrl){
             
             UICtrl.setScore(gameCtrl.getScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
+        
+            const thisLives = gameCtrl.getLives();
+            const thisPaddle = gameCtrl.getPaddle();
             UICtrl.drawLives(thisLives, thisPaddle);
             gameCtrl.setLevelState(false);
         }
