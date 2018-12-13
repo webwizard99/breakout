@@ -351,9 +351,9 @@ const GameController = (function(){
                 if (ball.position.y <= (ball.size /2) * boxCoEff) {
                     ball.position.y = (ball.size /2) * boxCoEff;
                 }
-                if (ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff))) {
-                    ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff));
-                }
+                // if (ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff))) {
+                //     ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff));
+                // }
                 reverseVerticalVelocity();
             } 
 
@@ -869,8 +869,7 @@ const Controller = (function(gameCtrl, UICtrl){
             const lives = gameCtrl.getLives();
             console.log(`lives: ${lives}`);
             if (lives <=0) {
-                alert('Game Over!');
-            
+                            
                 document.location.reload();
             } else {
                 gameCtrl.setLives(lives -1);
@@ -879,7 +878,7 @@ const Controller = (function(gameCtrl, UICtrl){
                 gameCtrl.setBallPos(startPos.x, startPos.y);
                 gameCtrl.setIsStarted(false);
                 gameCtrl.setGameOver(false); 
-                console.log('lives > 0');
+                
                 window.setTimeout(function(){ 
                     gameCtrl.setIsStarted(true);
                     
