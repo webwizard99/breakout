@@ -37,7 +37,7 @@ const GameController = (function(){
             x: levelSize.x / 2,
             y: levelSize.y - 40
         },
-        startPosPaddle: {
+        paddleStartPos: {
             x: (levelSize.x / 2) -45,
             y: levelSize.y - 30
         },
@@ -310,6 +310,7 @@ const GameController = (function(){
         },
 
         getLives: function() {
+            
             return game.lives;
         },
 
@@ -317,8 +318,16 @@ const GameController = (function(){
             game.lives = tLives;
         },
 
+        getMaxLives: function() {
+            return game.maxLives;
+        },
+
         getStartPos: function() {
             return game.startPos;
+        },
+
+        getPaddleStartPos: function() {
+            return game.paddleStartPos;
         },
 
         getIsStarted: function() {
@@ -440,11 +449,11 @@ const GameController = (function(){
                 }
 
                 tLevelSet.push(tLevel);
-                console.dir(tLevelSet);
+                
             });
             
             levels = tLevelSet.slice(0,tLevelSet.length);
-            console.dir(levels);
+            
             //return tLevel;
         },
 
@@ -836,6 +845,7 @@ const Controller = (function(gameCtrl, UICtrl){
         const ball = gameCtrl.getBall();
 
         gameCtrl.uplinkLevels();
+        gameCtrl.setLives(gameCtrl.getMaxLives());
         const thisLives = gameCtrl.getLives();
         const thisPaddle = gameCtrl.getPaddle();
         UICtrl.drawLives(thisLives, thisPaddle);
@@ -881,15 +891,17 @@ const Controller = (function(gameCtrl, UICtrl){
         if (gameCtrl.isGameOver()) {
             const lives = gameCtrl.getLives();
             
+
             if (lives <=0) {
-                            
+                alert(`lives: ${lives} game over!`);               
                 document.location.reload();
             } else {
                 gameCtrl.setLives(lives -1);
                 gameCtrl.setLevelState(true);
                 const startPos = gameCtrl.getStartPos();
-                gameCtrl.setBallPos(game.startPos.x, game.startPos.y);
-                gameCtrl.setPaddlePos(game.startPosPaddle.x, game.startPosPaddle.y);
+                gameCtrl.setBallPos(startPos.x, startPos.y);
+                const paddleStartPos = gameCtrl.getPaddleStartPos();
+                gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
                 gameCtrl.setIsStarted(false);
                 gameCtrl.setGameOver(false); 
                 
