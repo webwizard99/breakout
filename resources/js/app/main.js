@@ -9,7 +9,7 @@ import Levels from '../utils/Levels.js';
 // Model for game calculations
 const GameController = (function(){
     // array to hold all level objects
-    const levels = [];
+    let levels = [];
     
 
     // Base Level Size
@@ -36,6 +36,10 @@ const GameController = (function(){
         startPos: {
             x: levelSize.x / 2,
             y: levelSize.y - 40
+        },
+        startPosPaddle: {
+            x: (levelSize.x / 2) -45,
+            y: levelSize.y - 30
         },
         startVel: {
             x: 2,
@@ -167,7 +171,7 @@ const GameController = (function(){
         color: `rgba(210, 165, 85, .9)`,
         
         position: {
-            x: levelSize.x / 2,
+            x: (levelSize.x / 2) -45,
             y: levelSize.y - 30
         },
 
@@ -407,31 +411,40 @@ const GameController = (function(){
         },
 
         uplinkLevels: function() {
-            let tLevel = [];
+            let tLevelSet = [];
 
-            let tImport = Levels[1];
-                        
-            // iterate through the rows and columns and
-            // populate an area of blocks with boolean false
-            // elsewise
-            for (let row = 0; row < rowsProto; row++) {
-                let cellsRow = [];
-                for (let col = 0; col < columnsProto; col++) {
-                    if (!tImport[row][col]) {
-                        cellsRow.push(false);
-                    } else {
-                            let x = Math.floor(cell.width * col);
-                            let y = Math.floor(cell.height * row);
-                            let tImportBlock = tImport[row][col];
-                            let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
-                            cellsRow.push(tBlock);
+            let tImport = Levels;
+
+            tImport.forEach(tLevelTemplate => {
+
+                let tLevel = [];
+                            
+                // iterate through the rows and columns and
+                // populate an area of blocks with boolean false
+                // elsewise
+                for (let row = 0; row < rowsProto; row++) {
+                    let cellsRow = [];
+                    for (let col = 0; col < columnsProto; col++) {
+                        if (!tLevelTemplate[row][col]) {
+                            cellsRow.push(false);
+                        } else {
+                                let x = Math.floor(cell.width * col);
+                                let y = Math.floor(cell.height * row);
+                                let tImportBlock = tLevelTemplate[row][col];
+                                let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
+                                cellsRow.push(tBlock);
+                        }
                     }
+
+                    tLevel.push(cellsRow);
                 }
 
-                tLevel.push(cellsRow);
-            }
+                tLevelSet.push(tLevel);
+                console.dir(tLevelSet);
+            });
             
-            levels.push(tLevel);
+            levels = tLevelSet.slice(0,tLevelSet.length);
+            console.dir(levels);
             //return tLevel;
         },
 
@@ -867,7 +880,7 @@ const Controller = (function(gameCtrl, UICtrl){
         // check for Game Over
         if (gameCtrl.isGameOver()) {
             const lives = gameCtrl.getLives();
-            console.log(`lives: ${lives}`);
+            
             if (lives <=0) {
                             
                 document.location.reload();
@@ -875,7 +888,8 @@ const Controller = (function(gameCtrl, UICtrl){
                 gameCtrl.setLives(lives -1);
                 gameCtrl.setLevelState(true);
                 const startPos = gameCtrl.getStartPos();
-                gameCtrl.setBallPos(startPos.x, startPos.y);
+                gameCtrl.setBallPos(game.startPos.x, game.startPos.y);
+                gameCtrl.setPaddlePos(game.startPosPaddle.x, game.startPosPaddle.y);
                 gameCtrl.setIsStarted(false);
                 gameCtrl.setGameOver(false); 
                 
