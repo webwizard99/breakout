@@ -300,9 +300,23 @@ const GameController = (function(){
         
     }
 
+    const checkEmpty = function(Ecell) {
+        return Ecell === false;
+    }
+
     return {
         getBall: function() {
             return ball;
+        },
+
+        getPaddleVelocity: function() {
+            return paddle.velocity;
+        },
+
+        setPaddleVelocity: function(x) {
+            // if (!x) return;
+            paddle.velocity = x;
+            
         },
 
         getPaddle: function() {
@@ -342,6 +356,16 @@ const GameController = (function(){
             return (Math.floor(1000 / game.updateCyclesSec));
         },
 
+        getLevel: function() {
+            return game.level;
+        },
+
+        setLevel: function(levelN) {
+            if (levelN <= Levels.length) {
+                game.level = levelN;
+            }
+        },
+
         setBallPos: function(x, y) {
             ball.position.x = x;
             ball.position.y = y;
@@ -367,7 +391,10 @@ const GameController = (function(){
                 // if (ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff))) {
                 //     ball.position.y >= (levelSize.y - ((ball.size /2) * boxCoEff));
                 // }
-                reverseVerticalVelocity();
+                if (ball.position.y <= (paddle.position.y + paddle.size.y + ball.size))
+                {
+                    reverseVerticalVelocity();
+                }
             } 
 
             // Check for game over conditions
@@ -619,6 +646,23 @@ const GameController = (function(){
             }
         },
 
+        checkComplete: function() {
+            let tLevel = levels[game.level];
+            console.log(tLevel);
+            let emptyAll = true;
+            tLevel.forEach(tRow => {
+                if (!tRow.every(checkEmpty)) {
+                    emptyAll = false;
+                }
+            });
+            console.log(`emptyAll: ${emptyAll}`)
+            if (emptyAll) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
         getColumnsProto: function() {
             return columnsProto;
         },
@@ -836,7 +880,16 @@ const Controller = (function(gameCtrl, UICtrl){
             }
             
         }
-    } 
+    }
+
+    const setStartConditions = function() {
+        gameCtrl.setLevelState(true);
+        const startPos = gameCtrl.getStartPos();
+        gameCtrl.setBallPos(startPos.x, startPos.y);
+        const paddleStartPos = gameCtrl.getPaddleStartPos();
+        gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
+        
+    }
     
     // start a new game
     const startGame = function() {
@@ -887,6 +940,25 @@ const Controller = (function(gameCtrl, UICtrl){
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
         
+        // check for level clear
+        console.log(gameCtrl.checkComplete());
+        if (gameCtrl.checkComplete()) {
+            // alert('complete!')
+            setStartConditions();
+            gameCtrl.setPaddleVelocity(0);
+            gameCtrl.setLevel(gameCtrl.getLevel() + 1);
+            gameCtrl.setIsStarted(false);
+            window.setTimeout(function(){ 
+                gameCtrl.setIsStarted(true);
+                
+            }, 1200);
+            // gameCtrl.setLevelState(true);
+            // const startPos = gameCtrl.getStartPos();
+            //     gameCtrl.setBallPos(startPos.x, startPos.y);
+            //     const paddleStartPos = gameCtrl.getPaddleStartPos();
+            //     gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
+        }
+
         // check for Game Over
         if (gameCtrl.isGameOver()) {
             const lives = gameCtrl.getLives();
@@ -897,11 +969,9 @@ const Controller = (function(gameCtrl, UICtrl){
                 document.location.reload();
             } else {
                 gameCtrl.setLives(lives -1);
-                gameCtrl.setLevelState(true);
-                const startPos = gameCtrl.getStartPos();
-                gameCtrl.setBallPos(startPos.x, startPos.y);
-                const paddleStartPos = gameCtrl.getPaddleStartPos();
-                gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
+                setStartConditions();
+                gameCtrl.setPaddleVelocity(0);
+                
                 gameCtrl.setIsStarted(false);
                 gameCtrl.setGameOver(false); 
                 
