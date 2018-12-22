@@ -285,6 +285,8 @@ const GameController = (function(){
     }
 
     const reverseVerticalVelocity = function() {
+        // do not reverse horizontal velocity if ball is beneath paddle
+        if (ball.position.y > paddle.position.y + paddle.size.y + ball.size) return;
         ball.velocity.y *= -1; 
         randomRub();
     }
@@ -430,6 +432,7 @@ const GameController = (function(){
                 }    
                 return;
             } else {
+                
                 paddleCollide.effectCollide();
                 game.cyclesSincePaddle = 0;
             }
