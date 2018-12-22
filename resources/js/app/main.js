@@ -304,6 +304,17 @@ const GameController = (function(){
         return Ecell === false;
     }
 
+    const checkRange = function(blockR) {
+        let x, y;
+        x = blockR.position.x;
+        y = blockR.position.y;
+        return (Math.abs(x - ball.position.x) <= blockProto.width && Math.abs(y - ball.position.y) <= blockProto.width);
+    }
+
+    const fetchNotBlank = function(cellF) {
+        return cellF != false;
+    }
+
     return {
         getBall: function() {
             return ball;
@@ -579,15 +590,35 @@ const GameController = (function(){
             let masterCollide = new Collision();
             let allCollides = [];
             
+            let filteredLevel = [];
             
             levels[game.level].forEach((row, nRow) => {
+                if (row.find(fetchNotBlank)) {
+                    let filteredRow = [];
+                    const checkRow = row.filter(fetchNotBlank);
+                    filteredRow = checkRow.filter(checkRange);
+                    
+                    if (filteredRow.length > 0) {
+                        filteredLevel.push(filteredRow);
+                    }
+                }
+            });
+
+            if (filteredLevel.length < 1) return;
+
+            
+            
+
+            filteredLevel.forEach((row, nRow) => {
                                     
                 row.forEach((col, nCol) => {
                     
-                    if (levels[game.level][nRow][nCol]) {
-                        let tCell = levels[game.level][nRow][nCol];
-                        let x = Math.floor(cell.width * nCol);
-                        let y = Math.floor(cell.height * nRow);
+                    if (filteredLevel[nRow][nCol]) {
+                        let tCell = col;
+                        // let x = Math.floor(cell.width * nCol);
+                        // let y = Math.floor(cell.height * nRow);
+                        let x = col.position.x;
+                        let y = col.position.y;
                         let w = Math.floor(blockProto.width);
                         let h = blockProto.height;
                         
@@ -648,14 +679,14 @@ const GameController = (function(){
 
         checkComplete: function() {
             let tLevel = levels[game.level];
-            console.log(tLevel);
+            
             let emptyAll = true;
             tLevel.forEach(tRow => {
                 if (!tRow.every(checkEmpty)) {
                     emptyAll = false;
                 }
             });
-            console.log(`emptyAll: ${emptyAll}`)
+            
             if (emptyAll) {
                 return true;
             } else {
@@ -731,6 +762,14 @@ const UIController = (function(){
         ctx.closePath();
     }
 
+    const drawCircle = function(ctx, fill, y, x, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2, false);
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.closePath();
+    }
+
     return {
         getDomStrings: function() {
            return DOMStrings;
@@ -740,6 +779,15 @@ const UIController = (function(){
             const canvasRef = document.querySelector(DOMStrings.canvas);
             const CTX = canvasRef.getContext("2d");
             drawRect(CTX, color, x, y, h, w);
+        },
+
+        drawBall: function(ctx, ball) {
+        
+            drawCircle(ctx,
+                `#0095DD`,
+                ball.position.y,
+                ball.position.x,
+                ball.size);
         },
         
         // draw blocks on canvas
@@ -783,13 +831,7 @@ const UIController = (function(){
             
         },
 
-        drawCircle: function(ctx, fill, y, x, r) {
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI*2, false);
-            ctx.fillStyle = fill;
-            ctx.fill();
-            ctx.closePath();
-        },
+        
 
         drawPaddle: function(ctx, paddle) {
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
@@ -882,6 +924,7 @@ const Controller = (function(gameCtrl, UICtrl){
         }
     }
 
+    // enable level and set position of ball and paddle
     const setStartConditions = function() {
         gameCtrl.setLevelState(true);
         const startPos = gameCtrl.getStartPos();
@@ -908,7 +951,7 @@ const Controller = (function(gameCtrl, UICtrl){
     // draw the player ball
     const drawBall = function(ctx, ball) {
         
-        UICtrl.drawCircle(ctx,
+        UICtrl.drawBall(ctx,
             `#0095DD`,
             ball.position.y,
             ball.position.x,
@@ -941,23 +984,8 @@ const Controller = (function(gameCtrl, UICtrl){
         const paddle = gameCtrl.getPaddle();
         
         // check for level clear
-        console.log(gameCtrl.checkComplete());
-        if (gameCtrl.checkComplete()) {
-            // alert('complete!')
-            setStartConditions();
-            gameCtrl.setPaddleVelocity(0);
-            gameCtrl.setLevel(gameCtrl.getLevel() + 1);
-            gameCtrl.setIsStarted(false);
-            window.setTimeout(function(){ 
-                gameCtrl.setIsStarted(true);
-                
-            }, 1200);
-            // gameCtrl.setLevelState(true);
-            // const startPos = gameCtrl.getStartPos();
-            //     gameCtrl.setBallPos(startPos.x, startPos.y);
-            //     const paddleStartPos = gameCtrl.getPaddleStartPos();
-            //     gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
-        }
+        
+        
 
         // check for Game Over
         if (gameCtrl.isGameOver()) {
@@ -992,6 +1020,25 @@ const Controller = (function(gameCtrl, UICtrl){
         const needsUpdate = gameCtrl.getLevelState();
         if (needsUpdate) {
             
+            //check for stage completion
+            if (gameCtrl.checkComplete()) {
+                // alert('complete!')
+                setStartConditions();
+                gameCtrl.setPaddleVelocity(0);
+                gameCtrl.setLevel(gameCtrl.getLevel() + 1);
+                gameCtrl.setIsStarted(false);
+                window.setTimeout(function(){ 
+                    gameCtrl.setIsStarted(true);
+                    
+                }, 1200);
+                // gameCtrl.setLevelState(true);
+                // const startPos = gameCtrl.getStartPos();
+                //     gameCtrl.setBallPos(startPos.x, startPos.y);
+                //     const paddleStartPos = gameCtrl.getPaddleStartPos();
+                //     gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
+            }
+
+
             UICtrl.setScore(gameCtrl.getScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
         
@@ -1007,8 +1054,8 @@ const Controller = (function(gameCtrl, UICtrl){
         UICtrl.drawCanvas(ctx, blockProtoT, cellT);
 
         // draw the ball and paddle
-        drawBall(ctx, ball);
-        drawPaddle(ctx, paddle);
+        UICtrl.drawBall(ctx, ball);
+        UICtrl.drawPaddle(ctx, paddle);
 
         // check the blocks for collisions
         gameCtrl.checkBlocks();
