@@ -23,6 +23,7 @@ const GameController = (function(){
         cyclesSincePaddle: 0,
         updateCyclesSec: 100,
         points: 0,
+        highScore: 0,
         lives: 4,
         maxLives: 4,
         started: true,
@@ -186,9 +187,6 @@ const GameController = (function(){
         maxSpeed: 3.5
     }
 
-    const startRandom = function() {
-        return (Math.random() * 3);
-    }
     
     const randomRub = function() {
         const handicap = game.cyclesSincePaddle / 10000;
@@ -379,6 +377,11 @@ const GameController = (function(){
             }
         },
 
+        setBallVelocity: function(vel) {
+            ball.velocity.x = vel.x;
+            ball.velocity.y = vel.y;
+        },
+
         setBallPos: function(x, y) {
             ball.position.x = x;
             ball.position.y = y;
@@ -458,6 +461,17 @@ const GameController = (function(){
 
         getLevelSize: function() {
             return levelSize;
+        },
+
+        startRandom: function() {
+            let polar = (Math.random() * 2) -1;
+            if (polar > 0) {
+                polar = 1;
+            } else if (polar <= 0) {
+                polar = -1;
+            }
+            let xOut = (1.6 + (Math.random() * 0.8) + (game.level * 0.04)) * polar;
+            return ({x: xOut, y: 2});
         },
 
         uplinkLevels: function() {
@@ -723,6 +737,14 @@ const GameController = (function(){
             return game.points;
         },
 
+        getHighScore: function() {
+            return game.highScore;
+        },
+
+        setHighScore: function(score) {
+            game.highScore = score;
+        },
+
         test: function() {
             console.log(levels[game.level]);
         }
@@ -746,6 +768,7 @@ const UIController = (function(){
         canvas: `#myCanvas`,
         container: `#mainContainer`,
         score: `#score`,
+        highScore: `#highScore`,
         LivesView: `#LivesView`
     };
 
@@ -868,6 +891,11 @@ const UIController = (function(){
             scoreEle.innerText = score;
         },
 
+        setHighScore: function(score) {
+            const highScoreEle = document.querySelector(DOMStrings.highScore);
+            highScoreEle.innerText = score;
+        },
+
         test: function() {
             console.table(currentLevel);
         }
@@ -934,7 +962,7 @@ const Controller = (function(gameCtrl, UICtrl){
         gameCtrl.setBallPos(startPos.x, startPos.y);
         const paddleStartPos = gameCtrl.getPaddleStartPos();
         gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
-        
+        gameCtrl.setBallVelocity(gameCtrl.startRandom());
     }
     
     // start a new game
@@ -951,19 +979,19 @@ const Controller = (function(gameCtrl, UICtrl){
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
     }
 
-    // draw the player ball
-    const drawBall = function(ctx, ball) {
+    // // draw the player ball
+    // const drawBall = function(ctx, ball) {
         
-        UICtrl.drawBall(ctx,
-            `#0095DD`,
-            ball.position.y,
-            ball.position.x,
-            ball.size);
-    }
+    //     UICtrl.drawBall(ctx,
+    //         `#0095DD`,
+    //         ball.position.y,
+    //         ball.position.x,
+    //         ball.size);
+    // }
 
-    const drawPaddle = function(ctx, paddle) {
-        UICtrl.drawPaddle(ctx, paddle);
-    }
+    // const drawPaddle = function(ctx, paddle) {
+    //     UICtrl.drawPaddle(ctx, paddle);
+    // }
 
     // handle an update frame called by setInterval
     const update = function() {
@@ -996,22 +1024,30 @@ const Controller = (function(gameCtrl, UICtrl){
             
 
             if (lives <=0) {
-                alert(`lives: ${lives} game over!`);               
-                document.location.reload();
+                //alert(`lives: ${lives} game over!`);               
+                // document.location.reload();
+                window.setTimeout(function(){
+                    
+                    gameCtrl.setLives(gameCtrl.getMaxLives());
+                    gameCtrl.setLevelState(true);
+                    setStartConditions();
+                    gameCtrl.setGameOver(false);
+                }, 2500)
             } else {
                 gameCtrl.setLives(lives -1);
                 setStartConditions();
                 gameCtrl.setPaddleVelocity(0);
+                gameCtrl.setBallVelocity(gameCtrl.startRandom());
                 
                 gameCtrl.setIsStarted(false);
                 gameCtrl.setGameOver(false); 
                 
                 window.setTimeout(function(){ 
                     gameCtrl.setIsStarted(true);
-                    
+                    gameCtrl.setGameOver(false);
                 }, 1200);
             }
-            gameCtrl.setGameOver(false);
+            
         }
 
         if (!gameCtrl.isStarted()) return;
@@ -1023,9 +1059,22 @@ const Controller = (function(gameCtrl, UICtrl){
         const needsUpdate = gameCtrl.getLevelState();
         if (needsUpdate) {
             
+            let tScore = gameCtrl.getScore();
+            let tMax = gameCtrl.getHighScore();
+            
+            if (tScore > tMax) {
+                gameCtrl.setHighScore(tScore);
+                UICtrl.setHighScore(tScore);
+            }
+
             //check for stage completion
             if (gameCtrl.checkComplete()) {
                 // alert('complete!')
+                
+                
+
+                gameCtrl.setScore(0);
+                
                 setStartConditions();
                 gameCtrl.setPaddleVelocity(0);
                 gameCtrl.setLevel(gameCtrl.getLevel() + 1);
@@ -1043,6 +1092,7 @@ const Controller = (function(gameCtrl, UICtrl){
 
 
             UICtrl.setScore(gameCtrl.getScore());
+            // UICtrl.setHighScore(gameCtrl.getHighScore());
             UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
         
             const thisLives = gameCtrl.getLives();
