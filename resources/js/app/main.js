@@ -737,6 +737,10 @@ const GameController = (function(){
             return game.points;
         },
 
+        setScore: function(score) {
+            game.points = score;
+        },
+
         getHighScore: function() {
             return game.highScore;
         },
@@ -1031,6 +1035,7 @@ const Controller = (function(gameCtrl, UICtrl){
                     gameCtrl.setLives(gameCtrl.getMaxLives());
                     gameCtrl.setLevelState(true);
                     setStartConditions();
+                    gameCtrl.setScore(0);
                     gameCtrl.setGameOver(false);
                 }, 2500)
             } else {
@@ -1073,7 +1078,7 @@ const Controller = (function(gameCtrl, UICtrl){
                 
                 
 
-                gameCtrl.setScore(0);
+                
                 
                 setStartConditions();
                 gameCtrl.setPaddleVelocity(0);
