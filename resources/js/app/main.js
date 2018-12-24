@@ -1,4 +1,5 @@
 import Levels from '../utils/Levels.js';
+import Constants from '../utils/Constants.js';
 
 // ---#######--#######--#######--#######
 // -------#######--#######--#######-----
@@ -13,10 +14,7 @@ const GameController = (function(){
     
 
     // Base Level Size
-    const levelSize = {
-        x: 640,
-        y: 480
-    }
+    const levelSize = Constants.getLevelSize();
 
     // game state object
     const game = {
@@ -50,10 +48,10 @@ const GameController = (function(){
 
     
 
-    const drag = 0.045;
-    const boxCoEff = 1.06;
-    const collisionDelay = 85;
-    const randomVariance = 0.02;
+    const drag = Constants.getDrag();
+    const boxCoEff = Constants.getBoxCoEff();
+    const collisionDelay = Constants.getCollisionDelay();
+    const randomVariance = Constants.getRandomVariance();
     // const horizontalBounds = 0.16;
 
     const blockHP = 5;
@@ -132,20 +130,11 @@ const GameController = (function(){
 
     
 
-    const columnsProto = 16;
-    const rowsProto = 32; 
-    const cell = {
-        width: levelSize.x / columnsProto,
-        height: levelSize.y / rowsProto,
-        
-    }
+    const columnsProto = Constants.getColumnsProto();
+    const rowsProto = Constants.getRowsProto(); 
+    const cell = Constants.getCell();
 
-    const blockProto = {
-        width: cell.width * 0.95,
-        height: cell.height * 0.90,
-        offsetX: cell.width * 0.025,
-        offsetY: cell.height * 0.05
-    }
+    const blockProto = Constants.getBlockProto();
 
     
 
@@ -1028,17 +1017,24 @@ const Controller = (function(gameCtrl, UICtrl){
             
 
             if (lives <=0) {
-                //alert(`lives: ${lives} game over!`);               
-                // document.location.reload();
+                
+                // reload levels from file to erase
+                // current level progress
+                gameCtrl.uplinkLevels();
+                gameCtrl.setGameOver(false);
+                // after delay, start the game back with
+                // high score set as needed and score set to 0
                 window.setTimeout(function(){
                     
                     gameCtrl.setLives(gameCtrl.getMaxLives());
                     gameCtrl.setLevelState(true);
                     setStartConditions();
                     gameCtrl.setScore(0);
-                    gameCtrl.setGameOver(false);
+                    
                 }, 2500)
             } else {
+                // handle 'game over' if user has more lives,
+                // reset game state and subtract life
                 gameCtrl.setLives(lives -1);
                 setStartConditions();
                 gameCtrl.setPaddleVelocity(0);
