@@ -26,12 +26,16 @@ const GameController = (function(){
         maxLives: 4,
         started: true,
         paused: false,
+        menuOn: true,
+        menuChoice: true,
+        continueCount: 0,
         level: 0,
         hasChanged: true,
         leftPress: false,
         rightPress: false,
         isGameOver: false,
         toggleRebound: false,
+        ballHit: false,
         startPos: {
             x: levelSize.x / 2,
             y: levelSize.y - 40
@@ -276,11 +280,13 @@ const GameController = (function(){
         if (ball.position.y > paddle.position.y + paddle.size.y + ball.size) return;
         ball.velocity.y *= -1; 
         randomRub();
+        game.ballHit = true;
     }
 
     const reverseHorizontalVelocity = function() {
         ball.velocity.x *= -1;
         randomRub();
+        game.ballHit = true;
     }
 
     const addBallVelocity = function(axis, vel) {
@@ -364,6 +370,30 @@ const GameController = (function(){
             if (levelN <= Levels.length) {
                 game.level = levelN;
             }
+        },
+
+        getMenuOn: function() {
+            return game.menuOn;
+        },
+
+        setMenuOn: function(val) {
+            game.menuOn = val;
+        },
+
+        getMenuChoice: function() {
+            return game.menuChoice;
+        },
+
+        setMenuChoice: function(val) {
+            game.menuChoice = val;
+        },
+
+        getContinueCount: function() {
+            return game.continueCount;
+        },
+
+        setContinueCount: function(val) {
+            game.continueCount = val;
         },
 
         setBallVelocity: function(vel) {
@@ -591,6 +621,14 @@ const GameController = (function(){
             game.toggleRebound = !game.toggleRebound;
         },
 
+        setBallHit: function(val) {
+            game.ballHit = val;
+        },
+
+        getBallHit: function() {
+            return game.ballHit;
+        },
+
         checkBlocks: function(){
             
             let masterCollide = new Collision();
@@ -762,7 +800,8 @@ const UIController = (function(){
         container: `#mainContainer`,
         score: `#score`,
         highScore: `#highScore`,
-        LivesView: `#LivesView`
+        LivesView: `#LivesView`,
+        BallHit: `#BallHit`
     };
 
     const levelThemes = [
@@ -775,10 +814,29 @@ const UIController = (function(){
 
     const drawRect = function(ctx, fill, x, y, h, w) {
         ctx.beginPath();
+        console.dir(ctx);
         ctx.rect(x, y, w, h);
         ctx.fillStyle = fill;
         ctx.fill();
         ctx.closePath();
+    }
+
+    const drawShadowedRect = function(ctx, fill, fillShadow, x, y, h, w) {
+        ctx.beginPath();
+        ctx.shadowColor = fillShadow;
+        ctx.shadowOffsetX = -1;
+        ctx.shadowOffsetY = 1;
+        ctx.shadowBlur = 3;
+        ctx.rect(x, y, w, h);
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    const drawText = function(ctx, fill, text, x, y) {
+        ctx.font = `14px Bungee`;
+        ctx.fillStyle = fill;
+        ctx.fillText(text, x, y);
     }
 
     const drawCircle = function(ctx, fill, y, x, r) {
@@ -889,8 +947,28 @@ const UIController = (function(){
             highScoreEle.innerText = score;
         },
 
+        drawMenu: function() {
+            const tCanv = document.querySelector(`${DOMStrings.canvas}`);
+            const ctx = tCanv.getContext('2d');
+            drawShadowedRect(ctx, 
+                    `rgb(210,210,240)`,
+                    `rgb(130,130,150)`,
+                    120, 80, 120, 400);
+            
+            drawText(ctx,
+                    `rgb(70,70,90)`,
+                    'Game Over - Press Enter to Start',
+                    160, 120);
+        },
+
         test: function() {
             console.table(currentLevel);
+        },
+
+        playBallHit: function() {
+            const ballHit = document.querySelector(`${DOMStrings.BallHit}`);
+            ballHit.currentTime = 0;
+            ballHit.play();
         }
 
         
@@ -920,6 +998,16 @@ const Controller = (function(gameCtrl, UICtrl){
         if (!event.isTrusted) return;
         let paddle = gameCtrl.getPaddle();
         
+        if (event.keyCode === 13) {
+            if (gameCtrl.getMenuOn()) {
+                
+                setTimeout(function(){
+                    gameCtrl.setMenuOn(false);
+                    restartGame();
+                },1200);
+            }
+        }
+
         if (event.keyCode === 37) {
             if (!gameCtrl.isLeftPress()) {
                 gameCtrl.setLeftPress(true);
@@ -986,6 +1074,15 @@ const Controller = (function(gameCtrl, UICtrl){
     //     UICtrl.drawPaddle(ctx, paddle);
     // }
 
+    const restartGame = function() {
+        gameCtrl.setLives(gameCtrl.getMaxLives());
+        gameCtrl.setLevelState(true);
+        setStartConditions();
+        gameCtrl.setPaddleVelocity(0);
+        gameCtrl.setBallVelocity(gameCtrl.startRandom());
+        gameCtrl.setScore(0);
+    }
+
     // handle an update frame called by setInterval
     const update = function() {
         // set any frame-based game state variables
@@ -1002,14 +1099,20 @@ const Controller = (function(gameCtrl, UICtrl){
         const mCanvas = document.querySelector(DOM.canvas);
         const ctx = mCanvas.getContext("2d");
 
+
+        
+
         // get information from the game controller
         // about the ball and paddle
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
         
-        // check for level clear
-        
-        
+        // play sound if ballHit is true
+        const isHit = gameCtrl.getBallHit();
+        if (isHit) {
+            UICtrl.playBallHit();
+            gameCtrl.setBallHit(false);
+        }
 
         // check for Game Over
         if (gameCtrl.isGameOver()) {
@@ -1022,14 +1125,19 @@ const Controller = (function(gameCtrl, UICtrl){
                 // current level progress
                 gameCtrl.uplinkLevels();
                 gameCtrl.setGameOver(false);
+                gameCtrl.setMenuOn(true);
+
+
                 // after delay, start the game back with
                 // high score set as needed and score set to 0
                 window.setTimeout(function(){
                     
-                    gameCtrl.setLives(gameCtrl.getMaxLives());
-                    gameCtrl.setLevelState(true);
-                    setStartConditions();
-                    gameCtrl.setScore(0);
+                    // restartGame();
+                    
+                    // gameCtrl.setLives(gameCtrl.getMaxLives());
+                    // gameCtrl.setLevelState(true);
+                    // setStartConditions();
+                    // gameCtrl.setScore(0);
                     
                 }, 2500)
             } else {
@@ -1055,6 +1163,12 @@ const Controller = (function(gameCtrl, UICtrl){
 
         // clear the canvas
         ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
+
+        // If in menu mode, draw menu
+        if (gameCtrl.getMenuOn()) {
+            UICtrl.drawMenu();
+            return;
+        }
 
         // check if the state of the level has changed
         const needsUpdate = gameCtrl.getLevelState();
