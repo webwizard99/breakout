@@ -367,7 +367,7 @@ const GameController = (function(){
         },
 
         setLevel: function(levelN) {
-            if (levelN <= Levels.length) {
+            if (levelN <= Levels.length && levelN >= 0) {
                 game.level = levelN;
             }
         },
@@ -947,7 +947,7 @@ const UIController = (function(){
             highScoreEle.innerText = score;
         },
 
-        drawMenu: function() {
+        drawMenu: function(continues) {
             const tCanv = document.querySelector(`${DOMStrings.canvas}`);
             const ctx = tCanv.getContext('2d');
             drawShadowedRect(ctx, 
@@ -955,10 +955,27 @@ const UIController = (function(){
                     `rgb(130,130,150)`,
                     120, 80, 120, 400);
             
+            let gameOverText = '';
+            let continueText = '';
+            if (continues <= 0) {
+                gameOverText = 'Game Over - Press Enter to Start';
+
+            } else {
+                let continueCost = continues * 500;
+                gameOverText = 'Game Over - Enter (continue) or Esc (restart)'
+                continueText = `${continueCost} to Continue.`
+            }
             drawText(ctx,
                     `rgb(70,70,90)`,
-                    'Game Over - Press Enter to Start',
-                    160, 120);
+                    gameOverText,
+                    140, 100);
+
+            if (continueText != '') {
+                drawText(ctx,
+                    `rgb(70,70,90)`,
+                    continueText,
+                    140, 130);
+            }
         },
 
         test: function() {
@@ -1000,11 +1017,36 @@ const Controller = (function(gameCtrl, UICtrl){
         
         if (event.keyCode === 13) {
             if (gameCtrl.getMenuOn()) {
+                let tPoints = gameCtrl.getScore();
+                let tContinues = gameCtrl.getContinueCount();
+                if (tContinues === 0 || tPoints >= tContinues * 500) {
+                    
+                    
+                    setTimeout(function(){
+                        gameCtrl.setScore(tPoints - (tContinues * 500));
+                        gameCtrl.setContinueCount(tContinues + 1);
+                        gameCtrl.setMenuOn(false);
+                        restartGame();
+                    },1200);
+                }
                 
+            }
+        }
+
+        if (event.keyCode === 27) {
+            if (gameCtrl.getMenuOn()) {
+                
+                
+            
                 setTimeout(function(){
+                    gameCtrl.setContinueCount(0);
+                    gameCtrl.setScore(0);
+                    gameCtrl.setLevel(0);
                     gameCtrl.setMenuOn(false);
                     restartGame();
                 },1200);
+                
+                
             }
         }
 
@@ -1080,7 +1122,7 @@ const Controller = (function(gameCtrl, UICtrl){
         setStartConditions();
         gameCtrl.setPaddleVelocity(0);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
-        gameCtrl.setScore(0);
+        // gameCtrl.setScore(0);
     }
 
     // handle an update frame called by setInterval
@@ -1166,7 +1208,9 @@ const Controller = (function(gameCtrl, UICtrl){
 
         // If in menu mode, draw menu
         if (gameCtrl.getMenuOn()) {
-            UICtrl.drawMenu();
+            const currContinues = gameCtrl.getContinueCount();
+
+            UICtrl.drawMenu(currContinues);
             return;
         }
 
