@@ -1168,6 +1168,9 @@ const Controller = (function(gameCtrl, UICtrl){
                 gameCtrl.uplinkLevels();
                 gameCtrl.setGameOver(false);
                 gameCtrl.setMenuOn(true);
+                if (gameCtrl.getContinueCount() === 0) {
+                    gameCtrl.setContinueCount(1);
+                }
 
 
                 // after delay, start the game back with
