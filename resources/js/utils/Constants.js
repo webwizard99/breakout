@@ -5,13 +5,17 @@ const Constants = (function(){
         y: 480
     };
     
+    // timing for game mechanics
     const drag = 0.045;
     const boxCoEff = 1.12;
-    const collisionDelay = 85;
+    const collisionDelay = 15;
     const randomVariance = 0.02;
+
+    // timing delays for game state changes
     const titleDelay = 1800;
     const menuDelay = 500;
 
+    // level layout constants
     const columnsProto = 12;
     const rowsProto = 32;
 
