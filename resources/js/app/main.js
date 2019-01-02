@@ -11,6 +11,7 @@ import Constants from '../utils/Constants.js';
 const GameController = (function(){
     // array to hold all level objects
     let levels = [];
+    let levelNames = [];
     
 
     // Base Level Size
@@ -30,6 +31,7 @@ const GameController = (function(){
         menuChoice: true,
         continueCount: 0,
         level: 0,
+        displayLevelName: false,
         hasChanged: true,
         leftPress: false,
         rightPress: false,
@@ -56,6 +58,7 @@ const GameController = (function(){
     const boxCoEff = Constants.getBoxCoEff();
     const collisionDelay = Constants.getCollisionDelay();
     const randomVariance = Constants.getRandomVariance();
+    const titleDelay = Constants.getTitleDelay();
     // const horizontalBounds = 0.16;
 
     const blockHP = 5;
@@ -401,6 +404,10 @@ const GameController = (function(){
             ball.velocity.y = vel.y;
         },
 
+        getTitleDelay: function() {
+            return titleDelay;
+        },
+
         setBallPos: function(x, y) {
             ball.position.x = x;
             ball.position.y = y;
@@ -495,12 +502,14 @@ const GameController = (function(){
 
         uplinkLevels: function() {
             let tLevelSet = [];
+            let tLevelNames = [];
 
             let tImport = Levels;
 
             tImport.forEach(tLevelTemplate => {
 
                 let tLevel = [];
+                tLevelNames.push(tLevelTemplate.name);
                             
                 // iterate through the rows and columns and
                 // populate an area of blocks with boolean false
@@ -508,12 +517,12 @@ const GameController = (function(){
                 for (let row = 0; row < rowsProto; row++) {
                     let cellsRow = [];
                     for (let col = 0; col < columnsProto; col++) {
-                        if (!tLevelTemplate[row][col]) {
+                        if (!tLevelTemplate.map[row][col]) {
                             cellsRow.push(false);
                         } else {
                                 let x = Math.floor(cell.width * col);
                                 let y = Math.floor(cell.height * row);
-                                let tImportBlock = tLevelTemplate[row][col];
+                                let tImportBlock = tLevelTemplate.map[row][col];
                                 let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
                                 cellsRow.push(tBlock);
                         }
@@ -527,7 +536,7 @@ const GameController = (function(){
             });
             
             levels = tLevelSet.slice(0,tLevelSet.length);
-            
+            levelNames = tLevelNames.slice(0,tLevelNames.length);
             //return tLevel;
         },
 
@@ -562,6 +571,14 @@ const GameController = (function(){
 
         setLevelState: function(state) {
             game.hasChanged = state;
+        },
+
+        getDisplayLevelName: function() {
+            return game.displayLevelName;
+        },
+
+        setDisplayLevelName: function( val) {
+            game.displayLevelName = val;
         },
 
         dragPaddle: function() {
@@ -627,6 +644,10 @@ const GameController = (function(){
 
         getBallHit: function() {
             return game.ballHit;
+        },
+
+        getLevelName: function() {
+            return levelNames[game.level];
         },
 
         checkBlocks: function(){
@@ -804,6 +825,29 @@ const UIController = (function(){
         BallHit: `#BallHit`
     };
 
+    const Title = {
+        background: {
+            position: {
+                x: 60,
+                y: 40
+            },
+            size: {
+                x: 400,
+                y: 80
+            },
+            color: `rgba(120, 120, 160, 0.7)`,
+            shadow: `rgba(240, 240, 240, 0.5)`
+        },
+        text: {
+            position: {
+                x: 80,
+                y: 100
+            },
+            size: `2rem`,
+            color: `rgba(245, 250, 255, 0.95)`
+        }
+    }
+
     const levelThemes = [
         {
             basic: `rgba(80, 100, 140, %alpha)`
@@ -814,7 +858,7 @@ const UIController = (function(){
 
     const drawRect = function(ctx, fill, x, y, h, w) {
         ctx.beginPath();
-        console.dir(ctx);
+        
         ctx.rect(x, y, w, h);
         ctx.fillStyle = fill;
         ctx.fill();
@@ -833,8 +877,8 @@ const UIController = (function(){
         ctx.closePath();
     }
 
-    const drawText = function(ctx, fill, text, x, y) {
-        ctx.font = `14px Bungee`;
+    const drawText = function(ctx, fill, fontSize, text, x, y) {
+        ctx.font = `${fontSize} Bungee`;
         ctx.fillStyle = fill;
         ctx.fillText(text, x, y);
     }
@@ -967,15 +1011,37 @@ const UIController = (function(){
             }
             drawText(ctx,
                     `rgb(70,70,90)`,
+                    `14px`,
                     gameOverText,
                     140, 100);
 
             if (continueText != '') {
                 drawText(ctx,
                     `rgb(70,70,90)`,
+                    `14px`,
                     continueText,
                     140, 130);
             }
+        },
+
+        drawTitle: function(title) {
+            const tCanv = document.querySelector(`${DOMStrings.canvas}`);
+            const ctx = tCanv.getContext('2d');
+            drawShadowedRect(ctx, 
+                Title.background.color,
+                Title.background.shadow,
+                Title.background.position.x,
+                Title.background.position.y,
+                Title.background.size.y, 
+                Title.background.size.x);
+            
+            drawText(ctx,
+                Title.text.color,
+                Title.text.size,
+                title,
+                Title.text.position.x,
+                Title.text.position.y);
+            console.log(title);
         },
 
         test: function() {
@@ -1023,6 +1089,7 @@ const Controller = (function(gameCtrl, UICtrl){
                     
                     
                     setTimeout(function(){
+                        gameCtrl.setDisplayLevelName(true);
                         gameCtrl.setScore(tPoints - (tContinues * 500));
                         gameCtrl.setContinueCount(tContinues + 1);
                         gameCtrl.setMenuOn(false);
@@ -1042,6 +1109,7 @@ const Controller = (function(gameCtrl, UICtrl){
                     gameCtrl.setContinueCount(0);
                     gameCtrl.setScore(0);
                     gameCtrl.setLevel(0);
+                    gameCtrl.setDisplayLevelName(true);
                     gameCtrl.setMenuOn(false);
                     restartGame();
                 },1200);
@@ -1102,19 +1170,6 @@ const Controller = (function(gameCtrl, UICtrl){
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
     }
 
-    // // draw the player ball
-    // const drawBall = function(ctx, ball) {
-        
-    //     UICtrl.drawBall(ctx,
-    //         `#0095DD`,
-    //         ball.position.y,
-    //         ball.position.x,
-    //         ball.size);
-    // }
-
-    // const drawPaddle = function(ctx, paddle) {
-    //     UICtrl.drawPaddle(ctx, paddle);
-    // }
 
     const restartGame = function() {
         gameCtrl.setLives(gameCtrl.getMaxLives());
@@ -1142,19 +1197,12 @@ const Controller = (function(gameCtrl, UICtrl){
         const ctx = mCanvas.getContext("2d");
 
 
-        
-
         // get information from the game controller
         // about the ball and paddle
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
         
-        // play sound if ballHit is true
-        const isHit = gameCtrl.getBallHit();
-        if (isHit) {
-            UICtrl.playBallHit();
-            gameCtrl.setBallHit(false);
-        }
+        
 
         // check for Game Over
         if (gameCtrl.isGameOver()) {
@@ -1179,10 +1227,7 @@ const Controller = (function(gameCtrl, UICtrl){
                     
                     // restartGame();
                     
-                    // gameCtrl.setLives(gameCtrl.getMaxLives());
-                    // gameCtrl.setLevelState(true);
-                    // setStartConditions();
-                    // gameCtrl.setScore(0);
+                    
                     
                 }, 2500)
             } else {
@@ -1240,6 +1285,7 @@ const Controller = (function(gameCtrl, UICtrl){
                 setStartConditions();
                 gameCtrl.setPaddleVelocity(0);
                 gameCtrl.setLevel(gameCtrl.getLevel() + 1);
+                gameCtrl.setDisplayLevelName(true);
                 gameCtrl.setIsStarted(false);
                 window.setTimeout(function(){ 
                     gameCtrl.setIsStarted(true);
@@ -1264,9 +1310,22 @@ const Controller = (function(gameCtrl, UICtrl){
         }
 
         // draw blocks on <Canvas> element
+        // (or display level name)
         const blockProtoT = gameCtrl.getBlockProto();
         const cellT = gameCtrl.getCell();
-        UICtrl.drawCanvas(ctx, blockProtoT, cellT);
+        
+        if (!gameCtrl.getDisplayLevelName()) {
+            UICtrl.drawCanvas(ctx, blockProtoT, cellT);
+        } else {
+            const tName = gameCtrl.getLevelName();
+            UICtrl.drawTitle(tName);
+            gameCtrl.setIsStarted(false);
+            setTimeout(function(){
+                gameCtrl.setDisplayLevelName(false);
+                gameCtrl.setIsStarted(true);
+            }, gameCtrl.getTitleDelay())
+        }
+        
 
         // draw the ball and paddle
         UICtrl.drawBall(ctx, ball);
@@ -1298,6 +1357,13 @@ const Controller = (function(gameCtrl, UICtrl){
         // assert drag if not control is active
         if (!gameCtrl.isLeftPress() && !gameCtrl.isRightPress()) {
             gameCtrl.dragPaddle();
+        }
+
+        // play sound if ballHit is true
+        const isHit = gameCtrl.getBallHit();
+        if (isHit) {
+            UICtrl.playBallHit();
+            gameCtrl.setBallHit(false);
         }
     }
     

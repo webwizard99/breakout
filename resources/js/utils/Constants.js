@@ -6,9 +6,10 @@ const Constants = (function(){
     };
     
     const drag = 0.045;
-    const boxCoEff = 1.06;
+    const boxCoEff = 1.12;
     const collisionDelay = 85;
     const randomVariance = 0.02;
+    const titleDelay = 1800;
 
     const columnsProto = 12;
     const rowsProto = 32;
@@ -71,6 +72,10 @@ const Constants = (function(){
         getRowsProto: function() {
             
             return rowsProto;
+        },
+
+        getTitleDelay: function() {
+            return titleDelay;
         }
     }
 })();
