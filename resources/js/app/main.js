@@ -3,7 +3,11 @@ import Constants from '../utils/Constants.js';
 
 // ---#######--#######--#######--#######
 // -------#######--#######--#######-----
-// --- <<< GameController >>>
+// --- <<<<<<          >>>>>>>
+// --- <<<<<<          >>>>>>>
+// --- <<< GameController >>>>
+// --- <<<<<<          >>>>>>>
+// --- <<<<<<          >>>>>>>
 // -------#######--#######--#######-----
 // ---#######--#######--#######--#######
 
@@ -817,7 +821,11 @@ const GameController = (function(){
 
 // ---#######--#######--#######--#######
 // -------#######--#######--#######-----
-// --- <<< UIController >>>
+// --- <<<<<<        >>>>>>>
+// --- <<<<<<        >>>>>>>
+// --- <<< UIController >>>>
+// --- <<<<<<        >>>>>>>
+// --- <<<<<<        >>>>>>>
 // -------#######--#######--#######-----
 // ---#######--#######--#######--#######
 
@@ -841,8 +849,9 @@ const UIController = (function(){
                 x: 400,
                 y: 60
             },
-            colorStart: `rgba(30, 40, 80, 0.4`,
-            colorEnd: `rgba(30, 40, 50, 0.2)`,
+            colorStart: `rgba(80, 90, 140, 0.9`,
+            colorEnd: `rgba(140, 150, 200, 0.85)`,
+            shadow: `rgba(40, 40, 40, 0.5)`
             
         },
         text: {
@@ -1070,6 +1079,7 @@ const UIController = (function(){
                 Title.background.position.y,
                 Title.background.size.y, 
                 Title.background.size.x,
+                Title.background.shadow
                 );
             
             drawText(ctx,
