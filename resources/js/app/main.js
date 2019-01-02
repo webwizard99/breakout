@@ -59,6 +59,8 @@ const GameController = (function(){
     const collisionDelay = Constants.getCollisionDelay();
     const randomVariance = Constants.getRandomVariance();
     const titleDelay = Constants.getTitleDelay();
+    const menuDelay = Constants.getMenuDelay();
+
     // const horizontalBounds = 0.16;
 
     const blockHP = 5;
@@ -406,6 +408,10 @@ const GameController = (function(){
 
         getTitleDelay: function() {
             return titleDelay;
+        },
+
+        getMenuDelay: function() {
+            return menuDelay;
         },
 
         setBallPos: function(x, y) {
@@ -828,23 +834,25 @@ const UIController = (function(){
     const Title = {
         background: {
             position: {
-                x: 60,
-                y: 40
+                x: 120,
+                y: 60
             },
             size: {
                 x: 400,
-                y: 80
+                y: 60
             },
-            color: `rgba(120, 120, 160, 0.7)`,
-            shadow: `rgba(240, 240, 240, 0.5)`
+            colorStart: `rgba(30, 40, 80, 0.4`,
+            colorEnd: `rgba(30, 40, 50, 0.2)`,
+            
         },
         text: {
             position: {
-                x: 80,
+                x: 140,
                 y: 100
             },
-            size: `2rem`,
-            color: `rgba(245, 250, 255, 0.95)`
+            size: `1.5rem`,
+            color: `rgba(245, 250, 255, 0.95)`,
+            shadow: `rgba(40, 40, 40, 0.8)`
         }
     }
 
@@ -866,6 +874,7 @@ const UIController = (function(){
     }
 
     const drawShadowedRect = function(ctx, fill, fillShadow, x, y, h, w) {
+        ctx.save();
         ctx.beginPath();
         ctx.shadowColor = fillShadow;
         ctx.shadowOffsetX = -1;
@@ -875,12 +884,39 @@ const UIController = (function(){
         ctx.fillStyle = fill;
         ctx.fill();
         ctx.closePath();
+        ctx.restore();
     }
 
-    const drawText = function(ctx, fill, fontSize, text, x, y) {
+    const drawGradientRect = function(ctx, fillStart, fillEnd, x, y, h, w, fillShadow) {
+        ctx.save();
+        ctx.beginPath();
+        var grd = ctx.createLinearGradient(0,0, w, 0);
+        grd.addColorStop(0, fillStart);
+        grd.addColorStop(1, fillEnd);
+        if (fillShadow) {
+            ctx.shadowColor = fillShadow;
+            ctx.shadowOffsetX = -1;
+            ctx.shadowOffsetY = 1;
+            ctx.shadowBlur = 10;
+        }
+        ctx.rect(x, y, w, h);
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    const drawText = function(ctx, fill, fontSize, text, x, y, shadow) {
+        ctx.save();
         ctx.font = `${fontSize} Bungee`;
+        if (shadow) {
+            ctx.shadowColor = shadow;
+            ctx.shadowBlur = 6;
+        }
         ctx.fillStyle = fill;
         ctx.fillText(text, x, y);
+        ctx.restore();
+        
     }
 
     const drawCircle = function(ctx, fill, y, x, r) {
@@ -1027,21 +1063,23 @@ const UIController = (function(){
         drawTitle: function(title) {
             const tCanv = document.querySelector(`${DOMStrings.canvas}`);
             const ctx = tCanv.getContext('2d');
-            drawShadowedRect(ctx, 
-                Title.background.color,
-                Title.background.shadow,
+            drawGradientRect(ctx, 
+                Title.background.colorStart,
+                Title.background.colorEnd,
                 Title.background.position.x,
                 Title.background.position.y,
                 Title.background.size.y, 
-                Title.background.size.x);
+                Title.background.size.x,
+                );
             
             drawText(ctx,
                 Title.text.color,
                 Title.text.size,
                 title,
                 Title.text.position.x,
-                Title.text.position.y);
-            console.log(title);
+                Title.text.position.y,
+                Title.text.shadow);
+            
         },
 
         test: function() {
@@ -1094,7 +1132,7 @@ const Controller = (function(gameCtrl, UICtrl){
                         gameCtrl.setContinueCount(tContinues + 1);
                         gameCtrl.setMenuOn(false);
                         restartGame();
-                    },1200);
+                    }, gameCtrl.getMenuDelay());
                 }
                 
             }
@@ -1112,7 +1150,7 @@ const Controller = (function(gameCtrl, UICtrl){
                     gameCtrl.setDisplayLevelName(true);
                     gameCtrl.setMenuOn(false);
                     restartGame();
-                },1200);
+                }, gameCtrl.getMenuDelay());
                 
                 
             }

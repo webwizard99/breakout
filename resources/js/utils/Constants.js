@@ -10,6 +10,7 @@ const Constants = (function(){
     const collisionDelay = 85;
     const randomVariance = 0.02;
     const titleDelay = 1800;
+    const menuDelay = 500;
 
     const columnsProto = 12;
     const rowsProto = 32;
@@ -76,6 +77,10 @@ const Constants = (function(){
 
         getTitleDelay: function() {
             return titleDelay;
+        },
+
+        getMenuDelay: function() {
+            return menuDelay;
         }
     }
 })();
