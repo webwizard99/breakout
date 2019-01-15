@@ -1429,3 +1429,5 @@ const Controller = (function(gameCtrl, UICtrl){
 })(GameController, UIController);
 
 Controller.init();
+
+export default Controller;

@@ -41,6 +41,10 @@ const Constants = (function(){
         offsetY: cell.height * blockOffset.height
     }
 
+    const maxRows = 20;
+    const minBuffer = 1;
+
+
     return {
         getCell: function() {
             return cell;
@@ -85,6 +89,17 @@ const Constants = (function(){
 
         getMenuDelay: function() {
             return menuDelay;
+        },
+
+        checkBounds: function(r,c) {
+            if (r < minBuffer ||
+                r > maxRows ||
+                c < minBuffer ||
+                c > (columnsProto - minBuffer -1)) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 })();
