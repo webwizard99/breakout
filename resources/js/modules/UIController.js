@@ -124,6 +124,15 @@ const UIController = (function(){
                 ball.position.x,
                 ball.size);
         },
+
+        clearBall: function(ctx, pos, ball) {
+          const ballClear = 1.2;
+          drawCircle(ctx,
+            `rgb(230,230,250)`,
+            pos.y,
+            pos.x,
+            ball.size * ballClear);
+        },
         
         // draw blocks on canvas
         drawCanvas: function(CTX, blockProtoT, cellT) {
@@ -192,6 +201,10 @@ const UIController = (function(){
 
         drawPaddle: function(ctx, paddle) {
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
+        },
+
+        clearPaddle: function(ctx, pos, paddle) {
+          ctx.clearRect(pos.x - 1, pos.y - 1, paddle.size.x + 2, paddle.size.y + 2);
         },
 
         drawLives: function(lives, paddle) {

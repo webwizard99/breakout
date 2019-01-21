@@ -19,6 +19,8 @@ const Constants = (function(){
     const columnsProto = 12;
     const rowsProto = 32;
 
+    const cyclesPerSecond = 40;
+
     const blockProportion = {
         width: .95,
         height: .90
@@ -89,6 +91,10 @@ const Constants = (function(){
 
         getMenuDelay: function() {
             return menuDelay;
+        },
+
+        getCyclesPerSecond: function() {
+          return cyclesPerSecond;
         },
 
         checkBounds: function(r,c) {
