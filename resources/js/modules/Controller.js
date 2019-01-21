@@ -1,5 +1,5 @@
-import GameController from './GameController';
-import UIController from './UIController';
+import GameController from './GameController.js';
+import UIController from './UIController.js';
 
 const Controller = (function(gameCtrl, UICtrl){
     

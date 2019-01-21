@@ -19,7 +19,7 @@ const Constants = (function(){
     const columnsProto = 12;
     const rowsProto = 32;
 
-    const cyclesPerSecond = 40;
+    const cyclesPerSecond = 80;
 
     const blockProportion = {
         width: .95,

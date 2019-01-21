@@ -15,7 +15,7 @@ const GameController = (function(){
     // game state object
     const game = {
         cyclesSincePaddle: 0,
-        updateCyclesSec: 50,
+        updateCyclesSec: Constants.getCyclesPerSecond(),
         points: 0,
         highScore: 0,
         lives: 4,
