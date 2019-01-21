@@ -15,7 +15,7 @@ const GameController = (function(){
     // game state object
     const game = {
         cyclesSincePaddle: 0,
-        updateCyclesSec: 100,
+        updateCyclesSec: 50,
         points: 0,
         highScore: 0,
         lives: 4,
@@ -57,12 +57,7 @@ const GameController = (function(){
     const titleDelay = Constants.getTitleDelay();
     const menuDelay = Constants.getMenuDelay();
 
-    // const horizontalBounds = 0.16;
 
-    const blockHP = 5;
-
-
-    //let tBlock = new Block(1, blockHP, 1, 'basic', x, y, row, col);
     // Block function constructor
     const Block = function(width, color, hp, density, type, x, y, row, col) {
         this.width = width;
@@ -308,7 +303,7 @@ const GameController = (function(){
     }
 
     const fetchNotBlank = function(cellF) {
-        return cellF != false;
+        return cellF !== false;
     }
 
     return {
@@ -622,7 +617,7 @@ const GameController = (function(){
         },
 
         dragPaddle: function() {
-            if ((paddle.velocity > 0 && paddle.velocity > drag) || paddle.velocity < 0 && paddle.velocity < -drag) {
+            if ((paddle.velocity > 0 && paddle.velocity > drag) || (paddle.velocity < 0 && paddle.velocity < -drag)) {
                 if (paddle.velocity > 0) {
                     paddle.velocity -= drag;
                 } else if (paddle.velocity < 0) {
@@ -635,7 +630,7 @@ const GameController = (function(){
             
             if (vel !== 0) {
                 if ((paddle.velocity >= 0 && paddle.velocity < paddle.maxSpeed) ||
-                    paddle.velocity <= 0 && paddle.velocity > -paddle.maxSpeed) {
+                    (paddle.velocity <= 0 && paddle.velocity > -paddle.maxSpeed)) {
                     paddle.velocity += vel;
                 }
             }

@@ -34,11 +34,11 @@ const UIController = (function(){
         }
     }
 
-    const levelThemes = [
-        {
-            basic: `rgba(80, 100, 140, %alpha)`
-        }
-    ];
+    // const levelThemes = [
+    //     {
+    //         basic: `rgba(80, 100, 140, %alpha)`
+    //     }
+    // ];
     
     let currentLevel = [];
 
@@ -251,7 +251,7 @@ const UIController = (function(){
                     gameOverText,
                     140, 100);
 
-            if (continueText != '') {
+            if (continueText !== '') {
                 drawText(ctx,
                     `rgb(70,70,90)`,
                     `14px`,

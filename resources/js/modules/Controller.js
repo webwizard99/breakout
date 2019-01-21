@@ -1,31 +1,12 @@
-import Timer from './Timer';
 import GameController from './GameController';
 import UIController from './UIController';
 
 const Controller = (function(gameCtrl, UICtrl){
     
-    const Timer = function(fnToRun, rate) {
-        let timerRef = null;
-        const startTimer = function() {
-            this.timerRef = setInterval(function(){
-                update();
-            }, rate);
-        };
-
-        const stopTimer = function() {
-            clearInterval(this.timerRef);
-        };
-
-        return {
-            startTimer: startTimer,
-            stopTimer: stopTimer
-        }
-    }
-
-    let mainDrive = new Timer(update, gameCtrl.getUpdateRate());
+    
     
     const setEventListeners = function() {
-        const DOM = UICtrl.getDomStrings();
+        
         document.addEventListener('keydown', (e) => {
             handleMovement(e);
         });
@@ -131,8 +112,6 @@ const Controller = (function(gameCtrl, UICtrl){
     
     // start a new game
     const startGame = function() {
-        const DOM = UICtrl.getDomStrings();
-        const mCanvas = document.querySelector(DOM.canvas);
         const ball = gameCtrl.getBall();
 
         gameCtrl.uplinkLevels();
@@ -363,7 +342,25 @@ const Controller = (function(gameCtrl, UICtrl){
         }
     }
 
-    
+    const Timer = function(fnToRun, rate) {
+        this.timerRef = null;
+        const startTimer = function() {
+            this.timerRef = setInterval(function(){
+                update();
+            }, rate);
+        };
+
+        const stopTimer = function() {
+            clearInterval(this.timerRef);
+        };
+
+        return {
+            startTimer: startTimer,
+            stopTimer: stopTimer
+        }
+    }
+
+    let mainDrive = new Timer(update, gameCtrl.getUpdateRate());
     
     return {
         init: function() {
@@ -389,6 +386,16 @@ const Controller = (function(gameCtrl, UICtrl){
 
         getUpdateRateReact: function() {
             return gameCtrl.getUpdateRate();
+        },
+
+        getHighScoreReact: function() {
+            return gameCtrl.getHighScore();
+        },
+
+        setHighScoreReact: function(nScore) {
+            if (nScore && nScore > 0) {
+                gameCtrl.setHighScore(nScore);
+            }
         },
         
         stop: function() {
