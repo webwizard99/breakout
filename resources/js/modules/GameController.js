@@ -16,6 +16,7 @@ const GameController = (function(){
     const game = {
         cyclesSincePaddle: 0,
         updateCyclesSec: Constants.getCyclesPerSecond(),
+        initUI: false,
         points: 0,
         highScore: 0,
         lives: 4,
@@ -28,7 +29,6 @@ const GameController = (function(){
         victory: false,
         level: 0,
         displayLevelName: false,
-        hasChanged: true,
         leftPress: false,
         rightPress: false,
         isGameOver: false,
@@ -79,7 +79,7 @@ const GameController = (function(){
         if (val) {
             this.hp -= val;
             this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 20);
-            game.hasChanged = true;
+            
         }
         if (this.hp <= 0) {
             this.die();
@@ -307,6 +307,14 @@ const GameController = (function(){
     }
 
     return {
+        getInitUI: function() {
+          return game.initUI;
+        },
+
+        setInitUI: function(val) {
+          game.initUI = val;
+        },
+      
         getBall: function() {
             return ball;
         },
@@ -358,6 +366,10 @@ const GameController = (function(){
             return (Math.floor(1000 / game.updateCyclesSec));
         },
 
+        getCyclesSec: function() {
+          return game.updateCyclesSec;
+        },
+
         getLevel: function() {
             return game.level;
         },
@@ -367,8 +379,7 @@ const GameController = (function(){
         },
 
         setLevel: function(levelN) {
-            console.log(levels.length);
-            if (levelN <= levels.length && levelN > 0) {
+            if (levelN <= levels.length && levelN >= 0) {
                 game.level = levelN;
             }
         },
@@ -420,9 +431,9 @@ const GameController = (function(){
 
         setGameInit: function() {
             game.cyclesSincePaddle = 0;
-            game.updateCyclesSec = 100;
+            game.updateCyclesSec = Constants.getCyclesPerSecond();
             game.points = 0;
-            game.highScore = 0;
+            game.initUI = false;
             game.lives = 4;
             game.maxLives = 4;
             game.started = true;
@@ -432,7 +443,7 @@ const GameController = (function(){
             game.continueCount = 0;
             game.level = 0;
             game.displayLevelName = false;
-            game.hasChanged = true;
+            
             game.leftPress = false;
             game.rightPress = false;
             game.isGameOver = false;
@@ -533,6 +544,31 @@ const GameController = (function(){
             return ({x: xOut, y: 2});
         },
 
+        uplinkLevel: function(lvlN) {
+          let tLevel = [];
+          let tImport = Levels.getLevel(lvlN);
+
+          for (let row = 0; row < rowsProto; row++) {
+            let cellsRow = [];
+            for (let col = 0; col < columnsProto; col++) {
+                if (!tImport.map[row][col]) {
+                    cellsRow.push(false);
+                } else {
+                        let x = Math.floor(cell.width * col);
+                        let y = Math.floor(cell.height * row);
+                        let tImportBlock = tImport.map[row][col];
+                        let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
+                        cellsRow.push(tBlock);
+                }
+            }
+
+            tLevel.push(cellsRow);
+          }
+
+          levels[lvlN] = tLevel.slice(0,tLevel.length);
+
+        },
+
         uplinkLevels: function() {
             let tLevelSet = [];
             let tLevelNames = [];
@@ -598,14 +634,6 @@ const GameController = (function(){
             });
 
             return levelT;
-        },
-
-        getLevelState: function() {
-            return game.hasChanged;
-        },
-
-        setLevelState: function(state) {
-            game.hasChanged = state;
         },
 
         getDisplayLevelName: function() {
@@ -774,12 +802,17 @@ const GameController = (function(){
                     allCollides.forEach( tCell => {
                         tCell.takeDamage(ball.damage);
                 });
+            
+                return true;
+            } else {
+              return false;
             }
         },
 
         checkComplete: function() {
             let tLevel = levels[game.level];
-            
+            if (tLevel.length < 1 
+              || tLevel[0].length < 1) return false;
             let emptyAll = true;
             tLevel.forEach(tRow => {
                 if (!tRow.every(checkEmpty)) {

@@ -12,6 +12,10 @@ const Levels = (function() {
         getLevels: function() {
             return levels;
         },
+
+        getLevel: function(lvlN) {
+          return levels[lvlN];
+        },
         
         setLevels: function(lvls) {
             if (lvls && lvls.length > 0) {

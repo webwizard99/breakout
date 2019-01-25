@@ -3,7 +3,13 @@ import UIController from './UIController.js';
 
 const Controller = (function(gameCtrl, UICtrl){
     
-    
+    const tasks = [];
+    const validTasks = ['drawBlocks',
+      'highScore',
+      'updateUI',
+      'checkClear',
+      'advanceLevel',
+      'setLevel0'];
     
     const setEventListeners = function() {
         
@@ -13,6 +19,22 @@ const Controller = (function(gameCtrl, UICtrl){
         document.addEventListener('keyup', (e) => {
             toggleMovement(e);
         });
+    }
+
+    const getTask = function(taskName) {
+      const tTask = tasks.findIndex(tTask => tTask === taskName);
+      if (tTask === -1) {
+        return false;
+      } else {
+        return tasks.splice(tTask, 1);
+      }
+    }
+
+    
+    const addTask = function(taskName) {
+      if (validTasks.findIndex(tTask => tTask === taskName) !== -1) {
+        tasks.push(taskName);
+      }
     }
 
     const handleMovement = function(event) {
@@ -35,11 +57,10 @@ const Controller = (function(gameCtrl, UICtrl){
                     }, gameCtrl.getMenuDelay());
                 }
                 
-            }
-
-            if (gameCtrl.getVictory()) {
+            } else if (gameCtrl.getVictory()) {
                 setTimeout(function(){
-                    gameCtrl.setVictory(false);
+                    
+                    gameCtrl.setLevel(0)
                     gameCtrl.setMenuOn(true);
                 }, 500);
             }
@@ -50,14 +71,18 @@ const Controller = (function(gameCtrl, UICtrl){
             if (gameCtrl.getMenuOn()) {
                 
                 
-            
+                
                 setTimeout(function(){
+                    console.log('handleMovement ESC');
                     gameCtrl.setContinueCount(0);
                     gameCtrl.setScore(0);
-                    gameCtrl.setLevel(0);
+                    gameCtrl.setVictory(false);
                     gameCtrl.setDisplayLevelName(true);
                     gameCtrl.setMenuOn(false);
+                    gameCtrl.setLevel(0);
                     restartGame();
+                    
+                    
                 }, gameCtrl.getMenuDelay());
                 
                 
@@ -101,13 +126,13 @@ const Controller = (function(gameCtrl, UICtrl){
 
     // enable level and set position of ball and paddle
     const setStartConditions = function() {
-        gameCtrl.setLevelState(true);
+        
         const startPos = gameCtrl.getStartPos();
         gameCtrl.setBallPos(startPos.x, startPos.y);
         const paddleStartPos = gameCtrl.getPaddleStartPos();
         gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
-        
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
+        addTask('updateUI');
     }
     
     // start a new game
@@ -123,15 +148,20 @@ const Controller = (function(gameCtrl, UICtrl){
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
         gameCtrl.setIsStarted(true);
         gameCtrl.setGameInit();
+        addTask('updateUI');
     }
 
 
     const restartGame = function() {
+        gameCtrl.setInitUI(false);
         gameCtrl.setLives(gameCtrl.getMaxLives());
-        gameCtrl.setLevelState(true);
+        gameCtrl.uplinkLevels();
+        
         setStartConditions();
+        
         gameCtrl.setPaddleVelocity(0);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
+        
         // gameCtrl.setScore(0);
     }
 
@@ -157,6 +187,7 @@ const Controller = (function(gameCtrl, UICtrl){
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
         
+
         
 
         // check for Game Over
@@ -206,11 +237,14 @@ const Controller = (function(gameCtrl, UICtrl){
 
         if (!gameCtrl.isStarted()) return;
 
+
+
         // clear the canvas
         ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
 
         if (gameCtrl.getVictory()) {
             UICtrl.displayVictory(gameCtrl.getScore());
+            
             return;
         }
         
@@ -222,66 +256,69 @@ const Controller = (function(gameCtrl, UICtrl){
             return;
         }
 
-        // check if the state of the level has changed
-        const needsUpdate = gameCtrl.getLevelState();
-        if (needsUpdate) {
+        // check the blocks for collisions
+        const checkHit = gameCtrl.checkBlocks();
+
+        if (checkHit) {
+          addTask('highScore');
+          addTask('updateUI');
+          addTask('checkClear');
+        }
+
+        const checkScore = getTask('highScore');
+        if (checkScore) {
+
+          // update max score if needed
+          let tScore = gameCtrl.getScore();
+          let tMax = gameCtrl.getHighScore();
+              
+          if (tScore > tMax) {
+              gameCtrl.setHighScore(tScore);
+              UICtrl.setHighScore(tScore);
+          }
+        }
+
+        const checkClear = getTask('checkClear');
+        if (checkClear) {
+          
+          //check for stage completion
+          if (gameCtrl.checkComplete()) {
+            // alert('complete!')
             
-            let tScore = gameCtrl.getScore();
-            let tMax = gameCtrl.getHighScore();
+            setStartConditions();
+            gameCtrl.setPaddleVelocity(0);
+
+            if (gameCtrl.getLevel() + 1 < gameCtrl.getMaxLevel()) {
+                gameCtrl.uplinkLevel(gameCtrl.getLevel());
+                let nextLevel = gameCtrl.getLevel();
+                nextLevel += 1;
+                gameCtrl.setLevel(nextLevel);
+                gameCtrl.setDisplayLevelName(true);
+                
+            } else {
+                gameCtrl.setVictory(true);
+            }
             
-            if (tScore > tMax) {
-                gameCtrl.setHighScore(tScore);
-                UICtrl.setHighScore(tScore);
-            }
+            
+            gameCtrl.setIsStarted(false);
+            window.setTimeout(function(){ 
+                gameCtrl.setIsStarted(true);
+                
+            }, 1200);
+            
+          }
 
-            //check for stage completion
-            if (gameCtrl.checkComplete()) {
-                // alert('complete!')
-                
-                
+        }
 
-                
-                
-                setStartConditions();
-                gameCtrl.setPaddleVelocity(0);
-                
-                console.log(`clvl: ${gameCtrl.getLevel()} mlvl: ${gameCtrl.getMaxLevel()}`);
-
-                if (gameCtrl.getLevel() + 1 < gameCtrl.getMaxLevel()) {
-                    console.log('advancing level...');
-                    console.log(`level: ${gameCtrl.getLevel()}`);
-                    let nextLevel = gameCtrl.getLevel();
-                    nextLevel += 1;
-                    console.log(nextLevel);
-                    gameCtrl.setLevel(nextLevel);
-                    console.log(`level: ${gameCtrl.getLevel()}`);
-                    gameCtrl.setDisplayLevelName(true);
-                } else {
-                    gameCtrl.setVictory(true);
-                }
-                
-                
-                gameCtrl.setIsStarted(false);
-                window.setTimeout(function(){ 
-                    gameCtrl.setIsStarted(true);
-                    
-                }, 1200);
-                // gameCtrl.setLevelState(true);
-                // const startPos = gameCtrl.getStartPos();
-                //     gameCtrl.setBallPos(startPos.x, startPos.y);
-                //     const paddleStartPos = gameCtrl.getPaddleStartPos();
-                //     gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
-            }
-
-
-            UICtrl.setScore(gameCtrl.getScore());
-            // UICtrl.setHighScore(gameCtrl.getHighScore());
-            UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
-        
-            const thisLives = gameCtrl.getLives();
-            const thisPaddle = gameCtrl.getPaddle();
-            UICtrl.drawLives(thisLives, thisPaddle);
-            gameCtrl.setLevelState(false);
+        const checkUI = getTask('updateUI');
+        if (checkUI) {
+          UICtrl.setScore(gameCtrl.getScore());
+          // UICtrl.setHighScore(gameCtrl.getHighScore());
+          UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
+      
+          const thisLives = gameCtrl.getLives();
+          const thisPaddle = gameCtrl.getPaddle();
+          UICtrl.drawLives(thisLives, thisPaddle);
         }
 
         // draw blocks on <Canvas> element
@@ -306,19 +343,15 @@ const Controller = (function(gameCtrl, UICtrl){
         UICtrl.drawBall(ctx, ball);
         UICtrl.drawPaddle(ctx, paddle);
 
-        // check the blocks for collisions
-        gameCtrl.checkBlocks();
-
         // after drawing frame, move ball
         gameCtrl.setBallPos(
-            ball.position.x + ball.velocity.x,
-            ball.position.y - ball.velocity.y);
+            ball.position.x + (ball.velocity.x * (100 / gameCtrl.getCyclesSec())),
+            ball.position.y - (ball.velocity.y * (100 / gameCtrl.getCyclesSec())));
 
         gameCtrl.setPaddlePos(
-            paddle.position.x + paddle.velocity,
+            paddle.position.x + (paddle.velocity * (100 / gameCtrl.getCyclesSec())),
             paddle.position.y
         );
-
         
 
         // handle Paddle movement if a key is pressed
@@ -342,6 +375,8 @@ const Controller = (function(gameCtrl, UICtrl){
         }
     }
 
+    // define timer for setInterval that runs
+    // the update function
     const Timer = function(fnToRun, rate) {
         this.timerRef = null;
         const startTimer = function() {
@@ -395,6 +430,7 @@ const Controller = (function(gameCtrl, UICtrl){
         setHighScoreReact: function(nScore) {
             if (nScore && nScore > 0) {
                 gameCtrl.setHighScore(nScore);
+                UICtrl.setHighScore(nScore);
             }
         },
         

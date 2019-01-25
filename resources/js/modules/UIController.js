@@ -237,7 +237,7 @@ const UIController = (function(){
 
         setHighScore: function(score) {
             const highScoreEle = document.querySelector(DOMStrings.highScore);
-            highScoreEle.innerText = score;
+            highScoreEle.textContent = score;
         },
 
         drawMenu: function(continues) {
