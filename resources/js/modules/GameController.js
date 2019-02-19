@@ -594,6 +594,7 @@ const GameController = (function(){
                                 let x = Math.floor(cell.width * col);
                                 let y = Math.floor(cell.height * row);
                                 let tImportBlock = tLevelTemplate.map[row][col];
+                                
                                 let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
                                 cellsRow.push(tBlock);
                         }
@@ -616,6 +617,7 @@ const GameController = (function(){
             levels[game.level].forEach((row) => {
                let rowT = row.map((cell) => {
                     if (cell) {
+                      
                         return {
                             width: cell.width,
                             type: cell.type,

@@ -45,11 +45,16 @@ const Constants = (function(){
 
     const maxRows = 20;
     const minBuffer = 1;
+    const paletteBlocks = 16;
 
 
     return {
         getCell: function() {
             return cell;
+        },
+
+        getPaletteBlocks: function() {
+          return paletteBlocks;
         },
         
         getBlockProto: function() {

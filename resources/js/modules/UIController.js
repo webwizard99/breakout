@@ -157,7 +157,7 @@ const UIController = (function(){
                         };
 
                         let tCBlock = currentLevel[row][col];
-
+                        
                         const colorT = tCBlock.color.replace('%alpha', (tCBlock.opacity / 100).toString());
                         // const colorT = `rgba(140, 40, 140, 1)`;
                         
