@@ -46,7 +46,7 @@ const Constants = (function(){
     const maxRows = 20;
     const minBuffer = 1;
     const paletteBlocks = 16;
-    const swapAnimationDelay = 500;
+    const swapAnimationDelay = 400;
 
 
     return {
