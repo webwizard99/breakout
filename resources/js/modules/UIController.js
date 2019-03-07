@@ -1,12 +1,26 @@
 const UIController = (function(){
     const DOMStrings = {
-        canvas: `#myCanvas`,
+        Canvas: {
+          background: `#Canvas-background`,
+          player: `#Canvas-player`,
+          blocks: `#Canvas-blocks`,
+          hud: `#Canvas-hud`,
+          effects: `#Canvas-effects`
+        },
         container: `#mainContainer`,
         score: `#score`,
         highScore: `#highScore`,
         LivesView: `#LivesView`,
         BallHit: `#BallHit`
     };
+
+    const Layers = {
+      background: false,
+      player: false,
+      blocks: false,
+      hud: false,
+      effects: false
+    }
 
     const Title = {
         background: {
@@ -110,14 +124,14 @@ const UIController = (function(){
            return DOMStrings;
         },
 
-        drawBox: function(color, x, y, w, h) {
-            const canvasRef = document.querySelector(DOMStrings.canvas);
-            const CTX = canvasRef.getContext("2d");
-            drawRect(CTX, color, x, y, h, w);
-        },
+        // drawBox: function(color, x, y, w, h) {
+        //     const canvasRef = document.querySelector(DOMStrings.canvas);
+        //     const CTX = canvasRef.getContext("2d");
+        //     drawRect(CTX, color, x, y, h, w);
+        // },
 
         drawBall: function(ctx, ball) {
-        
+            Layers.player = true;
             drawCircle(ctx,
                 `#0095DD`,
                 ball.position.y,
@@ -137,7 +151,7 @@ const UIController = (function(){
         // draw blocks on canvas
         drawCanvas: function(CTX, blockProtoT, cellT) {
             
-            
+            Layers.blocks = true;
             for (let row = 0; row < currentLevel.length; row++) {
                 for (let col = 0; col < currentLevel[0].length; col++) {
                     
@@ -176,7 +190,8 @@ const UIController = (function(){
         },
 
         displayVictory: function(score) {
-            const tCanv = document.querySelector(`${DOMStrings.canvas}`);
+            Layers.hud = true;
+            const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');            
             const victoryText = `You win!    ${score}pts!`;
 
@@ -200,6 +215,7 @@ const UIController = (function(){
         },
 
         drawPaddle: function(ctx, paddle) {
+            Layers.player = true;
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
         },
 
@@ -241,8 +257,10 @@ const UIController = (function(){
         },
 
         drawMenu: function(continues) {
-            const tCanv = document.querySelector(`${DOMStrings.canvas}`);
+            Layers.hud = true;
+            const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');
+            
             drawShadowedRect(ctx, 
                     `rgb(210,210,240)`,
                     `rgb(130,130,150)`,
@@ -274,7 +292,8 @@ const UIController = (function(){
         },
 
         drawTitle: function(title) {
-            const tCanv = document.querySelector(`${DOMStrings.canvas}`);
+            Layers.hud = true;
+            const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');
             drawGradientRect(ctx, 
                 Title.background.colorStart,
@@ -304,6 +323,33 @@ const UIController = (function(){
             const ballHit = document.querySelector(`${DOMStrings.BallHit}`);
             ballHit.currentTime = 0;
             ballHit.play();
+        },
+
+        getLayers: function() {
+          return JSON.parse(JSON.stringify(Layers));
+        },
+
+        setLayers: function(newLayers) {
+          Layers = newLayers;
+        },
+
+        initCanvases: function() {
+          const baseCanvas = document.querySelector(DOMStrings.Canvas.background);
+          const baseRect = baseCanvas.getBoundingClientRect();
+          console.log(baseRect);
+          const basePos = {
+            x: baseRect.x,
+            y: baseRect.y,
+            top: baseRect.top
+          }
+          for (let layerNum = 1; layerNum < 5; layerNum++) {
+            const canvasLayer = document.querySelector(`[layer="${layerNum}"]`);
+            let layerRect = canvasLayer.getBoundingClientRect();
+            const vOffset = (layerRect.top) - basePos.top;
+            canvasLayer.style.transform = `translate(0px, ${-vOffset}px)`;
+
+          }
+
         }
 
         

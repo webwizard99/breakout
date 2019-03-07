@@ -4,12 +4,27 @@
     margin: 0;
 }
 
-#myCanvas {
+.canvas-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.canvas {
+  margin: auto;
+}
+
+#Canvas-background {
     background: rgb(230,230,250);
     display: block;
-    margin: 0 auto;
     box-shadow: 1px 1px 15px rgba(30, 30, 30, .4);
     border: 1px solid rgba(30, 30, 30, .6);
+}
+
+#Canvas-player, #Canvas-blocks, #Canvas-hud, #Canvas-effects {
+  background: none;
+  display: block;
+  
 }
 
 #mainContainer {

@@ -4,12 +4,13 @@ import UIController from './UIController.js';
 const Controller = (function(gameCtrl, UICtrl){
     
     const tasks = [];
-    const validTasks = ['drawBlocks',
-      'highScore',
-      'updateUI',
-      'checkClear',
-      'advanceLevel',
-      'setLevel0'];
+    const validTasks = {
+      drawBlocks: 'drawBlocks',
+      highScore: 'highScore',
+      updateUI: 'updateUI',
+      checkClear: 'checkClear',
+      advanceLevel: 'advanceLevel',
+      setLevel0: 'setLevel0'};
     
     const setEventListeners = function() {
         
@@ -132,7 +133,7 @@ const Controller = (function(gameCtrl, UICtrl){
         const paddleStartPos = gameCtrl.getPaddleStartPos();
         gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
-        addTask('updateUI');
+        addTask(validTasks.updateUI);
     }
     
     // start a new game
@@ -148,7 +149,7 @@ const Controller = (function(gameCtrl, UICtrl){
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
         gameCtrl.setIsStarted(true);
         gameCtrl.setGameInit();
-        addTask('updateUI');
+        addTask(validTasks.updateUI);
     }
 
 
@@ -175,11 +176,12 @@ const Controller = (function(gameCtrl, UICtrl){
             return;
         }
 
+        const tLayers = UICtrl.getLayers();
 
         // link to the Canvas DOM object
         const DOM = UICtrl.getDomStrings();
-        const mCanvas = document.querySelector(DOM.canvas);
-        const ctx = mCanvas.getContext("2d");
+        // const mCanvas = document.querySelector(DOM.canvas);
+        // const ctx = mCanvas.getContext("2d");
 
 
         // get information from the game controller
@@ -238,12 +240,16 @@ const Controller = (function(gameCtrl, UICtrl){
         if (!gameCtrl.isStarted()) return;
 
 
+        const playerCanvas = document.querySelector(DOM.Canvas.player);
+        const playerCtx = playerCanvas.getContext("2d");
 
         // clear the canvas
-        ctx.clearRect(0,0, mCanvas.width, mCanvas.height);
+        playerCtx.clearRect(0,0, playerCanvas.width, playerCanvas.height);
 
         if (gameCtrl.getVictory()) {
-            UICtrl.displayVictory(gameCtrl.getScore());
+            if (!Layers.hud) {
+              UICtrl.displayVictory(gameCtrl.getScore());
+            }
             
             return;
         }
@@ -263,6 +269,7 @@ const Controller = (function(gameCtrl, UICtrl){
           addTask('highScore');
           addTask('updateUI');
           addTask('checkClear');
+          addTask('drawBlocks');
         }
 
         const checkScore = getTask('highScore');
@@ -327,7 +334,12 @@ const Controller = (function(gameCtrl, UICtrl){
         const cellT = gameCtrl.getCell();
         
         if (!gameCtrl.getDisplayLevelName()) {
-            UICtrl.drawCanvas(ctx, blockProtoT, cellT);
+          const drawBlocks = getTask('drawBlocks');
+          if (drawBlocks) {
+            const blocksCanvas = document.querySelector(DOM.Canvas.blocks);
+            const blocksCtx = blocksCanvas.getContext("2d");
+            UICtrl.drawCanvas(blocksCtx, blockProtoT, cellT);
+          }
         } else {
             const tName = gameCtrl.getLevelName();
             UICtrl.drawTitle(tName);
@@ -340,8 +352,8 @@ const Controller = (function(gameCtrl, UICtrl){
         
 
         // draw the ball and paddle
-        UICtrl.drawBall(ctx, ball);
-        UICtrl.drawPaddle(ctx, paddle);
+        UICtrl.drawBall(playerCtx, ball);
+        UICtrl.drawPaddle(playerCtx, paddle);
 
         // after drawing frame, move ball
         gameCtrl.setBallPos(
@@ -400,6 +412,7 @@ const Controller = (function(gameCtrl, UICtrl){
     return {
         init: function() {
             setEventListeners();
+            UICtrl.initCanvases();
             
             // set the starting conditions for a game
             startGame();
