@@ -48,6 +48,36 @@ const UIController = (function(){
         }
     }
 
+    let activeObjects = {
+      player: {
+        ball: false,
+        paddle: false
+      },
+      blocks: false,
+      UI: {
+        score: false,
+        lives: false,
+        menu: false,
+        title: false,
+        victory: false
+      }
+    }
+
+    const activeObjectsInit = {
+      player: {
+        ball: false,
+        paddle: false
+      },
+      blocks: false,
+      UI: {
+        score: false,
+        lives: false,
+        menu: false,
+        title: false,
+        victory: false
+      }
+    }
+
     // const levelThemes = [
     //     {
     //         basic: `rgba(80, 100, 140, %alpha)`
@@ -150,7 +180,7 @@ const UIController = (function(){
         
         // draw blocks on canvas
         drawCanvas: function(CTX, blockProtoT, cellT) {
-            
+          
             Layers.blocks = true;
             for (let row = 0; row < currentLevel.length; row++) {
                 for (let col = 0; col < currentLevel[0].length; col++) {
@@ -291,6 +321,12 @@ const UIController = (function(){
             }
         },
 
+        clearMenu: function() {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+          ctx.clearRect(70, 70, 600, 450);
+        },
+
         drawTitle: function(title) {
             Layers.hud = true;
             const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
@@ -313,6 +349,12 @@ const UIController = (function(){
                 Title.text.position.y,
                 Title.text.shadow);
             
+        },
+
+        clearTitle: function(title) {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+          ctx.clearRect(70, 50, 600, 450);
         },
 
         test: function() {
@@ -350,6 +392,18 @@ const UIController = (function(){
 
           }
 
+        },
+
+        getActiveObjets: function() {
+          return JSON.parse(JSON.stringify(activeObjects));
+        },
+
+        setActiveObjects: function(newActiveObjs) {
+          activeObjects = newActiveObjs;
+        },
+
+        initActiveObjects: function() {
+          activeObjects = JSON.parse(JSON.stringify(activeObjectsInit));
         }
 
         
