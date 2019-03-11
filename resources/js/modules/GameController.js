@@ -97,12 +97,86 @@ const GameController = (function(){
         this.rightCollide = false;
         this.topCollide = false;
         this.bottomCollide = false;
+        this.leftX = 0;
+        this.rightX = 0;
+        this.topY = 0;
+        this.bottomY = 0;
+        
+    }
+
+    Collision.prototype.cornerCollide = function() {
+      let yDiff, xDiff;
+      if (this.topCollide) {
+        yDiff = ball.position.y - this.topY;
+      } else {
+        yDiff = ball.position.y - this.bottomY;
+      }
+
+      if (this.leftCollide) {
+        xDiff = ball.position.x - this.leftX;
+      } else {
+        xDiff = ball.position.x - this.rightX;
+      }
+
+      if (Math.abs(xDiff) < ball.size / 20) return;
+      let yRatio = Math.abs(yDiff) / (Math.abs(xDiff) + Math.abs(yDiff));
+
+      if (Math.abs(yDiff) < ball.size/ 20) return;
+      let xRatio = Math.abs(xDiff) / (Math.abs(xDiff) + Math.abs(yDiff));
+
+      if (yRatio > (1/ Constants.getMaxDeflectionRatio())) {
+        yRatio = 1/ Constants.getMaxDeflectionRatio();
+      }
+
+      if (xRatio > (1 /Constants.getMaxDeflectionRatio())) {
+        xRatio = 1 /Constants.getMaxDeflectionRatio();
+      }
+
+      if (ball.velocity.x < 0 && xRatio > 0) {
+        xRatio *= -1;
+      }
+
+      if (ball.velocity.y < 0 && yRatio > 0) {
+        yRatio *= -1;
+      }
+
+      const totalVel = Math.abs(ball.velocity.y) + Math.abs(ball.velocity.x);
+
+      let yVel = totalVel * xRatio;
+      let xVel = totalVel * yRatio;
+
+      if (yVel > ball.maxSpeed) {
+        yVel = ball.maxSpeed;
+      }
+
+      if (xVel > ball.maxSpeed) {
+        xVel = ball.maxSpeed;
+      }
+
+      if (Math.abs(yVel) < 1) {
+        if (yVel < 1) {
+          yVel = -1;
+        } else {
+          yVel = 1;
+        }
+      }
+
+      if (Math.abs(xVel) <1) {
+        if (xVel < 1) {
+          xVel = -1;
+        } else {
+          xVel = 1;
+        }
+      }
+      setBallVelocity({x: xVel, y: yVel});
     }
 
     Collision.prototype.effectCollide = function() {
         // If ball has rebounded already this frame, exit function
         if (game.toggleRebound) return;
         
+
+
         if (this.leftCollide || this.rightCollide) {
             reverseHorizontalVelocity();
         }
@@ -119,15 +193,9 @@ const GameController = (function(){
             }, collisionDelay);
         }
 
-        
-
-        this.leftCollide = false;
-        this.rightCollide = false;
-        this.topCollide = false;
-        this.bottomCollide = false;
     }
 
-
+    
     
 
     const columnsProto = Constants.getColumnsProto();
@@ -209,11 +277,13 @@ const GameController = (function(){
                 // Check if there's a block adjacent on the side of the block closest to the ball
                 if (isPaddle) {
                     collisionT.leftCollide = true;
+                    collisionT.leftX = x;
             
                     collided = true;
                 } else if((!(levels[game.level][cell.y][cell.x - 1]))) {
                 
                     collisionT.leftCollide = true;
+                    collisionT.leftX = x;
             
                     collided = true;
                     
@@ -226,13 +296,15 @@ const GameController = (function(){
                 
                 if (isPaddle) {
                     collisionT.rightCollide = true;
+                    collisionT.rightX = x + w;
             
                     collided = true;
                 } else if((!(levels[game.level][cell.y][cell.x + 1]))) {
                     
-                        collisionT.rightCollide = true;
-                
-                        collided = true;
+                    collisionT.rightCollide = true;
+                    collisionT.rightX = x + w;
+            
+                    collided = true;
                     
                 } 
                 
@@ -243,11 +315,13 @@ const GameController = (function(){
                 
                 if (isPaddle) {
                     collisionT.topCollide = true;
+                    collisionT.topY = y;
             
                     collided = true;
                 } else if((!(levels[game.level][cell.y - 1][cell.x]))) {
 
                     collisionT.topCollide = true;
+                    collisionT.topY = y;
 
                     collided = true;
                 }
@@ -259,10 +333,12 @@ const GameController = (function(){
                 
                 if (isPaddle) {
                     collisionT.bottomCollide = true;
+                    collisionT.bottomY = y + h;
             
                     collided = true;
                 } else if((!(levels[game.level][cell.y + 1][cell.x]))) {
                     collisionT.bottomCollide = true;
+                    collisionT.bottomY = y + h;
                     
                     collided = true;
                 }
@@ -310,6 +386,11 @@ const GameController = (function(){
 
     const fetchNotBlank = function(cellF) {
         return cellF !== false;
+    }
+
+    const setBallVelocity = function(vel) {
+      ball.velocity.x = vel.x;
+      ball.velocity.y = vel.y;
     }
 
     return {
@@ -514,6 +595,16 @@ const GameController = (function(){
             } else {
                 
                 paddleCollide.effectCollide();
+                let unaffectedVel = JSON.parse(JSON.stringify(ball.velocity));
+                unaffectedVel.x += (paddle.velocity / Constants.getPaddleFrictionCoeff());
+                
+                setBallVelocity(unaffectedVel);
+                if ((paddleCollide.leftCollide && paddleCollide.topCollide) ||
+                  (paddleCollide.leftCollide && paddleCollide.bottomCollide) ||
+                  (paddleCollide.rightCollide && paddleCollide.topCollide) ||
+                  (paddleCollide.leftCollide && paddleCollide.bottomCollide)) {
+                  paddleCollide.cornerCollide();
+                }
                 game.cyclesSincePaddle = 0;
             }
 
@@ -753,8 +844,6 @@ const GameController = (function(){
                     
                     if (filteredLevel[nRow][nCol]) {
                         let tCell = col;
-                        // let x = Math.floor(cell.width * nCol);
-                        // let y = Math.floor(cell.height * nRow);
                         let x = col.position.x;
                         let y = col.position.y;
                         let w = Math.floor(blockProto.width);
@@ -770,15 +859,19 @@ const GameController = (function(){
 
                         if (blockCollide.leftCollide) {
                             masterCollide.leftCollide = true;
+                            masterCollide.leftX = blockCollide.leftX;
                         }
                         if (blockCollide.rightCollide) {
                             masterCollide.rightCollide = true;
+                            masterCollide.rightX = blockCollide.rightX;
                         }
                         if (blockCollide.topCollide) {
                             masterCollide.topCollide = true;
+                            masterCollide.topY = blockCollide.topY;
                         }
                         if (blockCollide.bottomCollide) {
                             masterCollide.bottomCollide = true;
+                            masterCollide.bottomY = blockCollide.bottomY;
                         }
 
                         if (blockCollide.leftCollide ||
@@ -806,8 +899,14 @@ const GameController = (function(){
                 masterCollide.rightCollide = false;
                 masterCollide.leftCollide = false;
             }
+            
+            if ((masterCollide.leftCollide && masterCollide.topCollide) ||
+              (masterCollide.leftCollide && masterCollide.bottomCollide) ||
+              (masterCollide.rightCollide && masterCollide.topCollide) ||
+              (masterCollide.leftCollide && masterCollide.bottomCollide)) {
+                masterCollide.cornerCollide();
+              }
             masterCollide.effectCollide();
-
             if (allCollides) {
                     allCollides.forEach( tCell => {
                         tCell.takeDamage(ball.damage);

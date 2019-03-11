@@ -464,7 +464,7 @@ const UIController = (function(){
         initCanvases: function() {
           const baseCanvas = document.querySelector(DOMStrings.Canvas.background);
           const baseRect = baseCanvas.getBoundingClientRect();
-          console.log(baseRect);
+          
           const basePos = {
             x: baseRect.x,
             y: baseRect.y,

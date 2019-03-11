@@ -43,6 +43,9 @@ const Constants = (function(){
         offsetY: cell.height * blockOffset.height
     }
 
+    const paddleFrictionCoeff = 10;
+    const maxDeflectionRatio = 1.6;
+
     const maxRows = 20;
     const minBuffer = 1;
     const paletteBlocks = 16;
@@ -116,6 +119,14 @@ const Constants = (function(){
 
         getSwapAnimationDelay: function() {
           return swapAnimationDelay;
+        },
+
+        getPaddleFrictionCoeff: function() {
+          return paddleFrictionCoeff;
+        },
+
+        getMaxDeflectionRatio: function() {
+          return maxDeflectionRatio;
         }
     }
 })();

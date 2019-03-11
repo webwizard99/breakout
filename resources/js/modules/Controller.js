@@ -84,7 +84,6 @@ const Controller = (function(gameCtrl, UICtrl){
                 
                 
                 setTimeout(function(){
-                    console.log('handleMovement ESC');
                     gameCtrl.setContinueCount(0);
                     gameCtrl.setScore(0);
                     gameCtrl.setVictory(false);
@@ -295,7 +294,6 @@ const Controller = (function(gameCtrl, UICtrl){
             const currContinues = gameCtrl.getContinueCount();
             
             if (!UIObjects.UI.menu) {
-              console.log(UIObjects.UI.menu);
               UICtrl.drawMenu(currContinues);
               UIObjects.UI.menu = true;
               UICtrl.setActiveObjects(UIObjects);
