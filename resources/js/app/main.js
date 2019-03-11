@@ -3,6 +3,6 @@ import Constants from '../utils/Constants.js';
 import Controller from '../modules/Controller.js';
 
 
-Controller.init();
+setTimeout(function(){Controller.init();}, 30);
 
 export default Controller;

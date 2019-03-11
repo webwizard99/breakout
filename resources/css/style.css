@@ -17,14 +17,19 @@
 #Canvas-background {
     background: rgb(230,230,250);
     display: block;
-    box-shadow: 1px 1px 15px rgba(30, 30, 30, .4);
-    border: 1px solid rgba(30, 30, 30, .6);
+    
 }
 
 #Canvas-player, #Canvas-blocks, #Canvas-hud, #Canvas-effects {
   background: none;
   display: block;
-  
+  border: none;
+  box-shadow: none;
+}
+
+#Canvas-effects {
+  box-shadow: 1px 1px 15px rgba(30, 30, 30, .4);
+  border: 1px solid rgba(30, 30, 30, .6);
 }
 
 #mainContainer {

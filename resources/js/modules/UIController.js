@@ -22,6 +22,44 @@ const UIController = (function(){
       effects: false
     }
 
+    const Score = {
+      text: {
+        position: {
+            x: 20,
+            y: 30
+        },
+        size: `1.5rem`,
+        color: `rgba(245, 250, 255, 0.95)`,
+        shadow: `rgba(40, 40, 40, 0.9)`
+      }
+    }
+
+    const HighScore = {
+      text: {
+        position: {
+            x: 160,
+            y: 30
+        },
+        size: `1.5rem`,
+        color: `rgba(132, 162, 202, 0.95)`,
+        shadow: `rgba(40, 40, 40, 0.9)`
+        
+      }
+    }
+
+    const Life = {
+      position: {
+        x: 360,
+        y: 15
+      },
+      size: {
+        height: 10,
+        width: 50
+      },
+      shadow: `1px 1px 8px rgba(30, 30, 30, .4)`,
+      padding: 15
+    }
+
     const Title = {
         background: {
             position: {
@@ -169,12 +207,12 @@ const UIController = (function(){
                 ball.size);
         },
 
-        clearBall: function(ctx, pos, ball) {
+        clearBall: function(ctx, ball) {
           const ballClear = 1.2;
           drawCircle(ctx,
             `rgb(230,230,250)`,
-            pos.y,
-            pos.x,
+            ball.lastPosition.y,
+            ball.lastPosition.x,
             ball.size * ballClear);
         },
         
@@ -249,25 +287,36 @@ const UIController = (function(){
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
         },
 
-        clearPaddle: function(ctx, pos, paddle) {
-          ctx.clearRect(pos.x - 1, pos.y - 1, paddle.size.x + 2, paddle.size.y + 2);
+        clearPaddle: function(ctx, paddle) {
+          ctx.clearRect(paddle.lastPosition.x - 1, paddle.lastPosition.y - 1, paddle.size.x + 2, paddle.size.y + 2);
         },
 
         drawLives: function(lives, paddle) {
-            const LivesView = document.querySelector(DOMStrings.LivesView);
-            
-            LivesView.innerHTML = '';
-            for (let drawLife = 0; drawLife < lives; drawLife++) {
-                const tLifeView = document.createElement('div');
-                tLifeView.classList.add('life');
-                const displayAdjust = 0.75;
-                tLifeView.style.width = `${paddle.size.x * displayAdjust}px`;
-                tLifeView.style.height = `${paddle.size.y * displayAdjust}px`;
-                tLifeView.style.backgroundColor = paddle.color;
-                LivesView.appendChild(tLifeView);
-                
-            }
 
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+
+          for (let life = 0; life < lives; life++) {
+            drawShadowedRect(ctx, 
+              paddle.color,
+              `rgb(130,130,150)`,
+              Life.position.x + ((Life.size.width + Life.padding) * life),
+              Life.position.y,
+              Life.size.height,
+              Life.size.width);
+          }
+            
+
+        },
+
+        clearLives: function() {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+
+          ctx.clearRect(Life.position.x - 20,
+            0,
+            (Life.size.width + Life.padding + 5) * 5,
+            80);
         },
 
         // populates the currentLevel object in the
@@ -276,14 +325,50 @@ const UIController = (function(){
             currentLevel = level;
         },
 
-        setScore: function(score) {
-            const scoreEle = document.querySelector(DOMStrings.score);
-            scoreEle.innerText = score;
+        drawScore: function(score) {
+            const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+            const ctx = tCanv.getContext('2d');
+
+            drawText(ctx,
+              Score.text.color,
+              Score.text.size,
+              score,
+              Score.text.position.x,
+              Score.text.position.y,
+              Score.text.shadow);
         },
 
-        setHighScore: function(score) {
-            const highScoreEle = document.querySelector(DOMStrings.highScore);
-            highScoreEle.textContent = score;
+        clearScore: function() {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+
+          ctx.clearRect(Score.text.position.x - 20,
+            Score.text.position.y - 30,
+            Score.text.position.x + 100,
+            Score.text.position.y + 40);
+        },
+
+        drawHighScore: function(score) {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+
+          drawText(ctx,
+            HighScore.text.color,
+            HighScore.text.size,
+            score,
+            HighScore.text.position.x,
+            HighScore.text.position.y,
+            HighScore.text.shadow);
+        },
+
+        clearHighScore: function() {
+          const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
+          const ctx = tCanv.getContext('2d');
+
+          ctx.clearRect(HighScore.text.position.x - 20,
+            HighScore.text.position.y - 30,
+            HighScore.text.position.x + 100,
+            HighScore.text.position.y + 40);
         },
 
         drawMenu: function(continues) {
@@ -331,6 +416,7 @@ const UIController = (function(){
             Layers.hud = true;
             const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');
+            
             drawGradientRect(ctx, 
                 Title.background.colorStart,
                 Title.background.colorEnd,
@@ -394,7 +480,7 @@ const UIController = (function(){
 
         },
 
-        getActiveObjets: function() {
+        getActiveObjects: function() {
           return JSON.parse(JSON.stringify(activeObjects));
         },
 

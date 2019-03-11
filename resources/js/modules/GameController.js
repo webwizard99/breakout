@@ -144,7 +144,10 @@ const GameController = (function(){
             x: levelSize.x / 2,
             y: levelSize.y - 40
         },
-
+        lastPosition: {
+          x: levelSize.x / 2,
+          y: levelSize.y - 40
+        },
         velocity: {
             x: 2,
             y: 2
@@ -164,7 +167,10 @@ const GameController = (function(){
             x: (levelSize.x / 2) -45,
             y: levelSize.y - 30
         },
-
+        lastPosition: {
+          x: (levelSize.x / 2) -45,
+          y: levelSize.y - 30
+        },
         velocity: 0,
         acceleration: 0.16,
 
@@ -453,6 +459,7 @@ const GameController = (function(){
         },
 
         setBallPos: function(x, y) {
+            ball.lastPosition = JSON.parse(JSON.stringify(ball.position));
             ball.position.x = x;
             ball.position.y = y;
 
@@ -513,7 +520,8 @@ const GameController = (function(){
         }, 
 
         setPaddlePos: function(x, y) {
-            
+            paddle.lastPosition = JSON.parse(JSON.stringify(paddle.position));
+
             if (x > 0 && x < levelSize.x - (0 + paddle.size.x)) {
                 
                 paddle.position.x = x;

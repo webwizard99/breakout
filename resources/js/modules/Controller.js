@@ -10,7 +10,9 @@ const Controller = (function(gameCtrl, UICtrl){
       updateUI: 'updateUI',
       checkClear: 'checkClear',
       advanceLevel: 'advanceLevel',
-      setLevel0: 'setLevel0'};
+      setLevel0: 'setLevel0',
+      drawScore: 'drawScore',
+      drawHighScore: 'drawHighScore' };
 
     const validPhases = {
       menu: 'menu',
@@ -41,7 +43,6 @@ const Controller = (function(gameCtrl, UICtrl){
 
     
     const addTask = function(taskName) {
-      console.log(validTasks[taskName]);
       if (validTasks[taskName]) {
         tasks.push(taskName);
       }
@@ -138,9 +139,18 @@ const Controller = (function(gameCtrl, UICtrl){
     const setStartConditions = function() {
         
         const startPos = gameCtrl.getStartPos();
+        const ball = gameCtrl.getBall();
+        const paddle = gameCtrl.getPaddle();
+        const DOM = UICtrl.getDomStrings();
+        const playerCanvas = document.querySelector(DOM.Canvas.player);
+        const playerCtx = playerCanvas.getContext("2d");
+        UICtrl.clearBall(playerCtx, ball);
         gameCtrl.setBallPos(startPos.x, startPos.y);
+        UICtrl.drawBall(playerCtx, ball);
         const paddleStartPos = gameCtrl.getPaddleStartPos();
+        UICtrl.clearPaddle(playerCtx, paddle);
         gameCtrl.setPaddlePos(paddleStartPos.x, paddleStartPos.y);
+        UICtrl.drawPaddle(playerCtx, paddle);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
         addTask(validTasks.updateUI);
         
@@ -155,7 +165,7 @@ const Controller = (function(gameCtrl, UICtrl){
         const thisLives = gameCtrl.getLives();
         const thisPaddle = gameCtrl.getPaddle();
         UICtrl.initActiveObjects();
-        let UIObjects = UICtrl.getActiveObjets();
+        let UIObjects = UICtrl.getActiveObjects();
         UICtrl.drawLives(thisLives, thisPaddle);
         gameCtrl.setBallPos(ball.position.x, ball.position.y);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
@@ -168,6 +178,8 @@ const Controller = (function(gameCtrl, UICtrl){
         UICtrl.setActiveObjects(UIObjects);
         addTask(validTasks.updateUI);
         addTask(validTasks.drawBlocks);
+        addTask(validTasks.drawScore);
+        addTask(validTasks.drawHighScore);
     }
 
 
@@ -181,13 +193,15 @@ const Controller = (function(gameCtrl, UICtrl){
         
         gameCtrl.setPaddleVelocity(0);
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
-        let UIObjects = UICtrl.getActiveObjets();
+        let UIObjects = UICtrl.getActiveObjects();
         UIObjects.player.ball = true;
         UIObjects.player.paddle = true;
         UIObjects.UI.score = true;
         UIObjects.UI.lives = true;
         UICtrl.setActiveObjects(UIObjects);
-        
+        addTask(validTasks.drawBlocks);
+        addTask(validTasks.drawScore);
+        addTask(validTasks.drawHighScore);
 
         // gameCtrl.setScore(0);
     }
@@ -202,7 +216,8 @@ const Controller = (function(gameCtrl, UICtrl){
             return;
         }
 
-        let UIObjects = UICtrl.getActiveObjets();
+        let UIObjects = UICtrl.getActiveObjects();
+        
 
         // link to the Canvas DOM object
         const DOM = UICtrl.getDomStrings();
@@ -264,10 +279,10 @@ const Controller = (function(gameCtrl, UICtrl){
         const playerCtx = playerCanvas.getContext("2d");
 
         // clear the canvas
-        playerCtx.clearRect(0,0, playerCanvas.width, playerCanvas.height);
+        // playerCtx.clearRect(0,0, playerCanvas.width, playerCanvas.height);
 
         if (gameCtrl.getVictory()) {
-            if (!Layers.hud) {
+            if (!UIObjects.UI.victory) {
               UIObjects.UI.victory = true;
               UICtrl.displayVictory(gameCtrl.getScore());
             }
@@ -278,9 +293,12 @@ const Controller = (function(gameCtrl, UICtrl){
         // If in menu mode, draw menu
         if (gameCtrl.getMenuOn()) {
             const currContinues = gameCtrl.getContinueCount();
+            
             if (!UIObjects.UI.menu) {
+              console.log(UIObjects.UI.menu);
               UICtrl.drawMenu(currContinues);
               UIObjects.UI.menu = true;
+              UICtrl.setActiveObjects(UIObjects);
             }
             
             return;
@@ -310,8 +328,16 @@ const Controller = (function(gameCtrl, UICtrl){
               
           if (tScore > tMax) {
               gameCtrl.setHighScore(tScore);
-              UICtrl.setHighScore(tScore);
+              addTask(validTasks.drawHighScore);
           }
+        }
+
+        const drawHighScore = getTask(validTasks.drawHighScore);
+        if (drawHighScore) {
+          let tScore = gameCtrl.getHighScore();
+
+          UICtrl.clearHighScore();
+          UICtrl.drawHighScore(tScore);
         }
 
         const checkClear = getTask(validTasks.checkClear);
@@ -348,13 +374,22 @@ const Controller = (function(gameCtrl, UICtrl){
 
         const checkUI = getTask(validTasks.updateUI);
         if (checkUI) {
-          UICtrl.setScore(gameCtrl.getScore());
+          addTask(validTasks.drawScore);
+          UICtrl.clearScore();
+          UICtrl.drawScore(gameCtrl.getScore());
           // UICtrl.setHighScore(gameCtrl.getHighScore());
           UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
       
           const thisLives = gameCtrl.getLives();
           const thisPaddle = gameCtrl.getPaddle();
+          UICtrl.clearLives();
           UICtrl.drawLives(thisLives, thisPaddle);
+        }
+
+        const drawScore = getTask(validTasks.drawScore);
+        if (drawScore) {
+          UICtrl.clearScore();
+          UICtrl.drawScore(gameCtrl.getScore());
         }
 
         // draw blocks on <Canvas> element
@@ -386,6 +421,10 @@ const Controller = (function(gameCtrl, UICtrl){
             }, gameCtrl.getTitleDelay())
         }
         
+
+        // clear last ball and paddle positoin
+        UICtrl.clearBall(playerCtx, ball);
+        UICtrl.clearPaddle(playerCtx, paddle);
 
         // draw the ball and paddle
         UICtrl.drawBall(playerCtx, ball);
@@ -482,7 +521,7 @@ const Controller = (function(gameCtrl, UICtrl){
         setHighScoreReact: function(nScore) {
             if (nScore && nScore > 0) {
                 gameCtrl.setHighScore(nScore);
-                UICtrl.setHighScore(nScore);
+                UICtrl.drawHighScore(nScore);
             }
         },
         
