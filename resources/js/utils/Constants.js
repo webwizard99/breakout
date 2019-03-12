@@ -18,6 +18,7 @@ const Constants = (function(){
     // level layout constants
     const columnsProto = 12;
     const rowsProto = 40;
+    const rowsProtoEditor = 32;
 
     const cyclesPerSecond = 120;
 
@@ -92,6 +93,11 @@ const Constants = (function(){
         getRowsProto: function() {
             
             return rowsProto;
+        },
+
+        getRowsProtoEditor: function() {
+
+            return rowsProtoEditor;
         },
 
         getTitleDelay: function() {
