@@ -1,3 +1,5 @@
+import Constants from "../utils/Constants.js";
+
 const UIController = (function(){
     const DOMStrings = {
         Canvas: {
@@ -14,19 +16,18 @@ const UIController = (function(){
         BallHit: `#BallHit`
     };
 
-    const Layers = {
-      background: false,
-      player: false,
-      blocks: false,
-      hud: false,
-      effects: false
+    const MenuBar = {
+      position: {
+        x: 10,
+        y: Constants.getLevelSize().y - 50
+      }
     }
 
     const Score = {
       text: {
         position: {
-            x: 20,
-            y: 30
+            x: MenuBar.position.x + 20,
+            y: MenuBar.position.y + 30
         },
         size: `1.5rem`,
         color: `rgba(245, 250, 255, 0.95)`,
@@ -37,8 +38,8 @@ const UIController = (function(){
     const HighScore = {
       text: {
         position: {
-            x: 160,
-            y: 30
+            x: MenuBar.position.x + 160,
+            y: MenuBar.position.y + 30
         },
         size: `1.5rem`,
         color: `rgba(132, 162, 202, 0.95)`,
@@ -49,8 +50,8 @@ const UIController = (function(){
 
     const Life = {
       position: {
-        x: 360,
-        y: 15
+        x: MenuBar.position.x + 300,
+        y: MenuBar.position.y + 15
       },
       size: {
         height: 10,
@@ -199,7 +200,6 @@ const UIController = (function(){
         // },
 
         drawBall: function(ctx, ball) {
-            Layers.player = true;
             drawCircle(ctx,
                 `#0095DD`,
                 ball.position.y,
@@ -219,7 +219,6 @@ const UIController = (function(){
         // draw blocks on canvas
         drawCanvas: function(CTX, blockProtoT, cellT) {
           
-            Layers.blocks = true;
             for (let row = 0; row < currentLevel.length; row++) {
                 for (let col = 0; col < currentLevel[0].length; col++) {
                     
@@ -258,7 +257,6 @@ const UIController = (function(){
         },
 
         displayVictory: function(score) {
-            Layers.hud = true;
             const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');            
             const victoryText = `You win!    ${score}pts!`;
@@ -283,7 +281,6 @@ const UIController = (function(){
         },
 
         drawPaddle: function(ctx, paddle) {
-            Layers.player = true;
             drawRect(ctx, paddle.color, paddle.position.x, paddle.position.y, paddle.size.y, paddle.size.x)
         },
 
@@ -314,7 +311,7 @@ const UIController = (function(){
           const ctx = tCanv.getContext('2d');
 
           ctx.clearRect(Life.position.x - 20,
-            0,
+            Life.position.y - 15,
             (Life.size.width + Life.padding + 5) * 5,
             80);
         },
@@ -344,8 +341,8 @@ const UIController = (function(){
 
           ctx.clearRect(Score.text.position.x - 20,
             Score.text.position.y - 30,
-            Score.text.position.x + 100,
-            Score.text.position.y + 40);
+            100,
+            40);
         },
 
         drawHighScore: function(score) {
@@ -367,12 +364,11 @@ const UIController = (function(){
 
           ctx.clearRect(HighScore.text.position.x - 20,
             HighScore.text.position.y - 30,
-            HighScore.text.position.x + 100,
-            HighScore.text.position.y + 40);
+            100,
+            40);
         },
 
         drawMenu: function(continues) {
-            Layers.hud = true;
             const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');
             
@@ -409,11 +405,10 @@ const UIController = (function(){
         clearMenu: function() {
           const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
           const ctx = tCanv.getContext('2d');
-          ctx.clearRect(70, 70, 600, 450);
+          ctx.clearRect(70, 70, 600, 350);
         },
 
         drawTitle: function(title) {
-            Layers.hud = true;
             const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
             const ctx = tCanv.getContext('2d');
             
@@ -437,10 +432,10 @@ const UIController = (function(){
             
         },
 
-        clearTitle: function(title) {
+        clearTitle: function() {
           const tCanv = document.querySelector(`${DOMStrings.Canvas.hud}`);
           const ctx = tCanv.getContext('2d');
-          ctx.clearRect(70, 50, 600, 450);
+          ctx.clearRect(70, 50, 600, 350);
         },
 
         test: function() {
@@ -451,14 +446,6 @@ const UIController = (function(){
             const ballHit = document.querySelector(`${DOMStrings.BallHit}`);
             ballHit.currentTime = 0;
             ballHit.play();
-        },
-
-        getLayers: function() {
-          return JSON.parse(JSON.stringify(Layers));
-        },
-
-        setLayers: function(newLayers) {
-          Layers = newLayers;
         },
 
         initCanvases: function() {

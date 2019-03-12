@@ -2,7 +2,7 @@ const Constants = (function(){
     // Base Level Size
     const levelSize= {
         x: 640,
-        y: 480
+        y: 600
     };
     
     // timing for game mechanics
@@ -17,7 +17,7 @@ const Constants = (function(){
 
     // level layout constants
     const columnsProto = 12;
-    const rowsProto = 32;
+    const rowsProto = 40;
 
     const cyclesPerSecond = 120;
 
@@ -44,7 +44,7 @@ const Constants = (function(){
     }
 
     const paddleFrictionCoeff = 10;
-    const maxDeflectionRatio = 1.6;
+    const maxDeflectionRatio = 1.8;
 
     const maxRows = 20;
     const minBuffer = 1;

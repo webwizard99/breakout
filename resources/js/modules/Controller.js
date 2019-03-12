@@ -271,9 +271,6 @@ const Controller = (function(gameCtrl, UICtrl){
             
         }
 
-        if (!gameCtrl.isStarted()) return;
-
-
         const playerCanvas = document.querySelector(DOM.Canvas.player);
         const playerCtx = playerCanvas.getContext("2d");
 
@@ -301,15 +298,15 @@ const Controller = (function(gameCtrl, UICtrl){
             
             return;
         } else {
-          if (UIObjects.UI.menu = true) {
+          if (UIObjects.UI.menu) {
             UICtrl.clearMenu();
             UIObjects.UI.menu = false;
+            UICtrl.setActiveObjects(UIObjects);
           }
         }
 
         // check the blocks for collisions
         const checkHit = gameCtrl.checkBlocks();
-
         if (checkHit) {
           addTask(validTasks.highScore);
           addTask(validTasks.updateUI);
@@ -319,7 +316,6 @@ const Controller = (function(gameCtrl, UICtrl){
 
         const checkScore = getTask(validTasks.highScore);
         if (checkScore) {
-
           // update max score if needed
           let tScore = gameCtrl.getScore();
           let tMax = gameCtrl.getHighScore();
@@ -373,9 +369,6 @@ const Controller = (function(gameCtrl, UICtrl){
         const checkUI = getTask(validTasks.updateUI);
         if (checkUI) {
           addTask(validTasks.drawScore);
-          UICtrl.clearScore();
-          UICtrl.drawScore(gameCtrl.getScore());
-          // UICtrl.setHighScore(gameCtrl.getHighScore());
           UICtrl.setCurrentLevel(gameCtrl.getLevelObjectForUI());
       
           const thisLives = gameCtrl.getLives();
@@ -400,18 +393,17 @@ const Controller = (function(gameCtrl, UICtrl){
             UICtrl.clearTitle();
             UIObjects.UI.title = false;
           }
-          const drawBlocks = getTask(validTasks.drawBlocks);
-          if (drawBlocks) {
-            const blocksCanvas = document.querySelector(DOM.Canvas.blocks);
-            const blocksCtx = blocksCanvas.getContext("2d");
-            blocksCtx.clearRect(0,0, blocksCanvas.width, blocksCanvas.height);
-            UICtrl.drawCanvas(blocksCtx, blockProtoT, cellT);
-            UIObjects.blocks = true;
-          }
+          
         } else {
             const tName = gameCtrl.getLevelName();
-            UICtrl.drawTitle(tName);
-            UIObjects.UI.title = true;
+            if (!UIObjects.UI.title) {
+            
+              UICtrl.clearMenu();
+              UIObjects.UI.menu = false;
+              
+              UICtrl.drawTitle(tName);
+              UIObjects.UI.title = true;
+            }
             gameCtrl.setIsStarted(false);
             setTimeout(function(){
                 gameCtrl.setDisplayLevelName(false);
@@ -419,6 +411,14 @@ const Controller = (function(gameCtrl, UICtrl){
             }, gameCtrl.getTitleDelay())
         }
         
+        const drawBlocks = getTask(validTasks.drawBlocks);
+          if (drawBlocks) {
+            const blocksCanvas = document.querySelector(DOM.Canvas.blocks);
+            const blocksCtx = blocksCanvas.getContext("2d");
+            blocksCtx.clearRect(0,0, blocksCanvas.width, blocksCanvas.height);
+            UICtrl.drawCanvas(blocksCtx, blockProtoT, cellT);
+            UIObjects.blocks = true;
+          }
 
         // clear last ball and paddle positoin
         UICtrl.clearBall(playerCtx, ball);

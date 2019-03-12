@@ -36,11 +36,11 @@ const GameController = (function(){
         ballHit: false,
         startPos: {
             x: levelSize.x / 2,
-            y: levelSize.y - 40
+            y: levelSize.y - 100
         },
         paddleStartPos: {
             x: (levelSize.x / 2) -45,
-            y: levelSize.y - 30
+            y: levelSize.y - 80
         },
         startVel: {
             x: 2,
@@ -106,6 +106,7 @@ const GameController = (function(){
 
     Collision.prototype.cornerCollide = function() {
       let yDiff, xDiff;
+      
       if (this.topCollide) {
         yDiff = ball.position.y - this.topY;
       } else {
@@ -124,12 +125,12 @@ const GameController = (function(){
       if (Math.abs(yDiff) < ball.size/ 20) return;
       let xRatio = Math.abs(xDiff) / (Math.abs(xDiff) + Math.abs(yDiff));
 
-      if (yRatio > (1/ Constants.getMaxDeflectionRatio())) {
-        yRatio = 1/ Constants.getMaxDeflectionRatio();
+      if (yRatio > (1 / Constants.getMaxDeflectionRatio())) {
+        yRatio = 1 / Constants.getMaxDeflectionRatio();
       }
 
-      if (xRatio > (1 /Constants.getMaxDeflectionRatio())) {
-        xRatio = 1 /Constants.getMaxDeflectionRatio();
+      if (xRatio > (1 / Constants.getMaxDeflectionRatio())) {
+        xRatio = 1 / Constants.getMaxDeflectionRatio();
       }
 
       if (ball.velocity.x < 0 && xRatio > 0) {
@@ -145,27 +146,27 @@ const GameController = (function(){
       let yVel = totalVel * xRatio;
       let xVel = totalVel * yRatio;
 
-      if (yVel > ball.maxSpeed) {
+      if (Math.abs(yVel) > ball.maxSpeed) {
         yVel = ball.maxSpeed;
       }
 
-      if (xVel > ball.maxSpeed) {
+      if (Math.abs(xVel) > ball.maxSpeed) {
         xVel = ball.maxSpeed;
       }
 
-      if (Math.abs(yVel) < 1) {
-        if (yVel < 1) {
-          yVel = -1;
+      if (Math.abs(yVel) < ball.minSpeed) {
+        if (yVel < ball.minSpeed) {
+          yVel = -ball.minSpeed;
         } else {
-          yVel = 1;
+          yVel = ball.minSpeed;
         }
       }
 
-      if (Math.abs(xVel) <1) {
-        if (xVel < 1) {
-          xVel = -1;
+      if (Math.abs(xVel) < ball.minSpeed) {
+        if (xVel < ball.minSpeed) {
+          xVel = -ball.minSpeed;
         } else {
-          xVel = 1;
+          xVel = ball.minSpeed;
         }
       }
       setBallVelocity({x: xVel, y: yVel});
@@ -221,11 +222,10 @@ const GameController = (function(){
             y: 2
             
         },
-
-        
         size: 6,
         damage: 3,
-        maxSpeed: 4
+        maxSpeed: 3.2,
+        minSpeed: 1.6
     }
 
     let paddle = {
@@ -233,11 +233,11 @@ const GameController = (function(){
         
         position: {
             x: (levelSize.x / 2) -45,
-            y: levelSize.y - 30
+            y: levelSize.y - 100
         },
         lastPosition: {
           x: (levelSize.x / 2) -45,
-          y: levelSize.y - 30
+          y: levelSize.y - 100
         },
         velocity: 0,
         acceleration: 0.16,
@@ -639,7 +639,7 @@ const GameController = (function(){
             } else if (polar <= 0) {
                 polar = -1;
             }
-            let xOut = (1.6 + (Math.random() * 0.8) + (game.level * 0.04)) * polar;
+            let xOut = (ball.minSpeed + (Math.random() * (ball.maxSpeed-ball.minSpeed)) + (game.level * 0.04)) * polar;
             return ({x: xOut, y: 2});
         },
 
@@ -649,16 +649,23 @@ const GameController = (function(){
 
           for (let row = 0; row < rowsProto; row++) {
             let cellsRow = [];
-            for (let col = 0; col < columnsProto; col++) {
-                if (!tImport.map[row][col]) {
-                    cellsRow.push(false);
-                } else {
-                        let x = Math.floor(cell.width * col);
-                        let y = Math.floor(cell.height * row);
-                        let tImportBlock = tImport.map[row][col];
-                        let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
-                        cellsRow.push(tBlock);
-                }
+            if (row > tImport.map.length - 1) {
+              
+              for (let col = 0; col < columnsProto; col++) {
+                cellsRow.push(false);
+              }
+            } else {
+              for (let col = 0; col < columnsProto; col++) {
+                  if (!tImport.map[row][col]) {
+                      cellsRow.push(false);
+                  } else {
+                          let x = Math.floor(cell.width * col);
+                          let y = Math.floor(cell.height * row);
+                          let tImportBlock = tImport.map[row][col];
+                          let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
+                          cellsRow.push(tBlock);
+                  }
+              }
             }
 
             tLevel.push(cellsRow);
@@ -686,17 +693,25 @@ const GameController = (function(){
                 // elsewise
                 for (let row = 0; row < rowsProto; row++) {
                     let cellsRow = [];
-                    for (let col = 0; col < columnsProto; col++) {
-                        if (!tLevelTemplate.map[row][col]) {
-                            cellsRow.push(false);
-                        } else {
-                                let x = Math.floor(cell.width * col);
-                                let y = Math.floor(cell.height * row);
-                                let tImportBlock = tLevelTemplate.map[row][col];
-                                
-                                let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
-                                cellsRow.push(tBlock);
-                        }
+                    
+                    if (row > tLevelTemplate.map.length - 1) {
+                      
+                      for (let col = 0; col < columnsProto; col++) {
+                        cellsRow.push(false);
+                      }
+                    } else {
+                      for (let col = 0; col < columnsProto; col++) {
+                          if (!tLevelTemplate.map[row][col]) {
+                              cellsRow.push(false);
+                          } else {
+                                  let x = Math.floor(cell.width * col);
+                                  let y = Math.floor(cell.height * row);
+                                  let tImportBlock = tLevelTemplate.map[row][col];
+                                  
+                                  let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
+                                  cellsRow.push(tBlock);
+                          }
+                      }
                     }
 
                     tLevel.push(cellsRow);
