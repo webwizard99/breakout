@@ -1,7 +1,8 @@
 import GameController from './GameController.js';
 import UIController from './UIController.js';
+import Effects from '../utils/Effects.js';
 
-const Controller = (function(gameCtrl, UICtrl){
+const Controller = (function(gameCtrl, UICtrl, eFX){
     
     const tasks = [];
     const validTasks = {
@@ -293,9 +294,9 @@ const Controller = (function(gameCtrl, UICtrl){
             if (!UIObjects.UI.menu) {
               UICtrl.drawMenu(currContinues);
               UIObjects.UI.menu = true;
-              UICtrl.setActiveObjects(UIObjects);
+              
             }
-            
+            UICtrl.setActiveObjects(UIObjects);
             return;
         } else {
           if (UIObjects.UI.menu) {
@@ -459,6 +460,9 @@ const Controller = (function(gameCtrl, UICtrl){
             gameCtrl.setBallHit(false);
         }
 
+        eFX.advanceCycle();
+        console.log(eFX.getCycle());
+
         UICtrl.setActiveObjects(UIObjects);
     }
 
@@ -529,6 +533,6 @@ const Controller = (function(gameCtrl, UICtrl){
             gameCtrl.setIsStarted(false);
         }
     }
-})(GameController, UIController);
+})(GameController, UIController, Effects);
 
 export default Controller;
