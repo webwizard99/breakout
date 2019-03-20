@@ -1,6 +1,6 @@
 import Levels from '../utils/Levels.js';
 import Constants from '../utils/Constants.js';
-// import LevelStorage from '../../../../../Utils/LevelStorage';
+import Abilities from '../utils/Abilities.js';
 
 // Model for game calculations
 const GameController = (function(){
@@ -34,6 +34,7 @@ const GameController = (function(){
         isGameOver: false,
         toggleRebound: false,
         ballHit: false,
+        abilitiesAttached: false,
         startPos: {
             x: levelSize.x / 2,
             y: levelSize.y - 100
@@ -530,7 +531,7 @@ const GameController = (function(){
             game.continueCount = 0;
             game.level = 0;
             game.displayLevelName = false;
-            
+            game.abilitiesAttached = false;
             game.leftPress = false;
             game.rightPress = false;
             game.isGameOver = false;
@@ -643,36 +644,32 @@ const GameController = (function(){
             return ({x: xOut, y: 2});
         },
 
-        uplinkLevel: function(lvlN) {
-          let tLevel = [];
-          let tImport = Levels.getLevel(lvlN);
+        attachAbilities: function() {
+          console.log(`attachAbilities: ${game.abilitiesAttached}`);
+          if (game.abilitiesAttached) return;
 
-          for (let row = 0; row < rowsProto; row++) {
-            let cellsRow = [];
-            if (row > tImport.map.length - 1) {
+          let tImport = levels[game.level];
+          console.log(tImport);
+
+          for (let row = 0; row < tImport.length -1; row++) {
+            
+            for (let col = 0; col < columnsProto; col++) {
               
-              for (let col = 0; col < columnsProto; col++) {
-                cellsRow.push(false);
-              }
-            } else {
-              for (let col = 0; col < columnsProto; col++) {
-                  if (!tImport.map[row][col]) {
-                      cellsRow.push(false);
-                  } else {
-                          let x = Math.floor(cell.width * col);
-                          let y = Math.floor(cell.height * row);
-                          let tImportBlock = tImport.map[row][col];
-                          let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
-                          cellsRow.push(tBlock);
-                  }
-              }
-            }
-
-            tLevel.push(cellsRow);
+              let tBlock = tImport[row][col];
+              if (!tBlock) continue;
+              if (tBlock.type === "healer") {
+                console.log('healer block detected');
+                const tAbility = Abilities.getNewAbility({
+                  interval: 4500,
+                  abilityName: 'heal',
+                  args: []});
+                tBlock.abilityId = tAbility.createId(); 
+                tAbility.scheduleProc();                                   
+              }                        
+      
+            }           
           }
-
-          levels[lvlN] = tLevel.slice(0,tLevel.length);
-
+          game.abilitiesAttached = true;
         },
 
         uplinkLevels: function() {
@@ -709,6 +706,7 @@ const GameController = (function(){
                                   let tImportBlock = tLevelTemplate.map[row][col];
                                   
                                   let tBlock = new Block(1, tImportBlock.color, tImportBlock.hp, 1, tImportBlock.type, x, y, row, col);
+                                  
                                   cellsRow.push(tBlock);
                           }
                       }
@@ -985,6 +983,14 @@ const GameController = (function(){
 
         setHighScore: function(score) {
             game.highScore = score;
+        },
+
+        getAbilitiesAttached: function() {
+          return game.abilitiesAttached;
+        },
+
+        setAbilitiesAttached: function(val) {
+          game.abilitiesAttached = val;
         },
 
         test: function() {

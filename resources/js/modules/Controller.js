@@ -1,9 +1,8 @@
 import GameController from './GameController.js';
 import UIController from './UIController.js';
 import Effects from '../utils/Effects.js';
-import Abilities from '../utils/Abilities.js';
 
-const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
+const Controller = (function(gameCtrl, UICtrl, eFX){
     
     const tasks = [];
     const validTasks = {
@@ -347,7 +346,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
             gameCtrl.setPaddleVelocity(0);
 
             if (gameCtrl.getLevel() + 1 < gameCtrl.getMaxLevel()) {
-                gameCtrl.uplinkLevel(gameCtrl.getLevel());
+                // gameCtrl.uplinkLevel(gameCtrl.getLevel());
                 let nextLevel = gameCtrl.getLevel();
                 nextLevel += 1;
                 gameCtrl.setLevel(nextLevel);
@@ -407,9 +406,11 @@ const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
               UIObjects.UI.title = true;
             }
             gameCtrl.setIsStarted(false);
+            gameCtrl.setAbilitiesAttached(false);
             setTimeout(function(){
                 gameCtrl.setDisplayLevelName(false);
                 gameCtrl.setIsStarted(true);
+                gameCtrl.attachAbilities();
             }, gameCtrl.getTitleDelay())
         }
         
@@ -462,7 +463,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
         }
 
         eFX.advanceCycle();
-        Ablties.advanceCycle();
+        
 
         UICtrl.setActiveObjects(UIObjects);
     }
@@ -534,6 +535,6 @@ const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
             gameCtrl.setIsStarted(false);
         }
     }
-})(GameController, UIController, Effects, Abilities);
+})(GameController, UIController, Effects);
 
 export default Controller;
