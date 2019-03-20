@@ -1,8 +1,9 @@
 import GameController from './GameController.js';
 import UIController from './UIController.js';
 import Effects from '../utils/Effects.js';
+import Abilities from '../utils/Abilities.js';
 
-const Controller = (function(gameCtrl, UICtrl, eFX){
+const Controller = (function(gameCtrl, UICtrl, eFX, Ablties){
     
     const tasks = [];
     const validTasks = {
@@ -461,7 +462,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
         }
 
         eFX.advanceCycle();
-        console.log(eFX.getCycle());
+        Ablties.advanceCycle();
 
         UICtrl.setActiveObjects(UIObjects);
     }
@@ -533,6 +534,6 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
             gameCtrl.setIsStarted(false);
         }
     }
-})(GameController, UIController, Effects);
+})(GameController, UIController, Effects, Abilities);
 
 export default Controller;
