@@ -645,20 +645,17 @@ const GameController = (function(){
         },
 
         attachAbilities: function() {
-          console.log(`attachAbilities: ${game.abilitiesAttached}`);
           if (game.abilitiesAttached) return;
-
+          
           let tImport = levels[game.level];
-          console.log(tImport);
 
           for (let row = 0; row < tImport.length -1; row++) {
-            
             for (let col = 0; col < columnsProto; col++) {
               
               let tBlock = tImport[row][col];
               if (!tBlock) continue;
               if (tBlock.type === "healer") {
-                console.log('healer block detected');
+                
                 const tAbility = Abilities.getNewAbility({
                   interval: 4500,
                   abilityName: 'heal',
@@ -671,7 +668,7 @@ const GameController = (function(){
           }
           game.abilitiesAttached = true;
         },
-
+        
         uplinkLevels: function() {
             let tLevelSet = [];
             let tLevelNames = [];

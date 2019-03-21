@@ -1,8 +1,9 @@
 import GameController from './GameController.js';
 import UIController from './UIController.js';
 import Effects from '../utils/Effects.js';
+import Abilities from '../utils/Abilities.js';
 
-const Controller = (function(gameCtrl, UICtrl, eFX){
+const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
     
     const tasks = [];
     const validTasks = {
@@ -137,7 +138,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
 
     // enable level and set position of ball and paddle
     const setStartConditions = function() {
-        
+        ablties.clearAbilities();
         const startPos = gameCtrl.getStartPos();
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
@@ -243,6 +244,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
                 // reload levels from file to erase
                 // current level progress
                 gameCtrl.uplinkLevels();
+                ablties.clearAbilities();
                 gameCtrl.setGameOver(false);
                 gameCtrl.setMenuOn(true);
                 if (gameCtrl.getContinueCount() === 0) {
@@ -463,7 +465,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
         }
 
         eFX.advanceCycle();
-        
+        ablties.advanceCycle();
 
         UICtrl.setActiveObjects(UIObjects);
     }
@@ -535,6 +537,6 @@ const Controller = (function(gameCtrl, UICtrl, eFX){
             gameCtrl.setIsStarted(false);
         }
     }
-})(GameController, UIController, Effects);
+})(GameController, UIController, Effects, Abilities);
 
 export default Controller;
