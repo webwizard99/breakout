@@ -14,7 +14,8 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
       advanceLevel: 'advanceLevel',
       setLevel0: 'setLevel0',
       drawScore: 'drawScore',
-      drawHighScore: 'drawHighScore' };
+      drawHighScore: 'drawHighScore',
+      performAbilities: 'performAbilities'};
 
     const validPhases = {
       menu: 'menu',
@@ -138,7 +139,6 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
 
     // enable level and set position of ball and paddle
     const setStartConditions = function() {
-        ablties.clearAbilities();
         const startPos = gameCtrl.getStartPos();
         const ball = gameCtrl.getBall();
         const paddle = gameCtrl.getPaddle();
@@ -210,21 +210,20 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
     // handle an update frame called by setInterval
     const update = function() {
         // set any frame-based game state variables
-        //gameCtrl.setToggleRebound(false);
-                
+                        
         // if game state is not started, exit update
         if (!gameCtrl.getIsStarted()) {
             return;
         }
 
+        // UIObjects tracks which UIPanes are active
+        // and setActiveObjects(UIObjects) should be
+        // called before returning from update at any
+        // line beyond this line of code
         let UIObjects = UICtrl.getActiveObjects();
         
-
         // link to the Canvas DOM object
         const DOM = UICtrl.getDomStrings();
-        // const mCanvas = document.querySelector(DOM.canvas);
-        // const ctx = mCanvas.getContext("2d");
-
 
         // get information from the game controller
         // about the ball and paddle
@@ -232,12 +231,9 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
         const paddle = gameCtrl.getPaddle();
         
 
-        
-
         // check for Game Over
         if (gameCtrl.isGameOver()) {
             const lives = gameCtrl.getLives();
-            
 
             if (lives <=0) {
                 
@@ -367,6 +363,16 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
             
           }
 
+        }
+
+        const currentAbilities = ablties.fetchAbilities();
+        if (currentAbilities) {
+          addTask(validTasks.performAbilities);
+        }
+
+        const performAbilities = getTask(validTasks.performAbilities);
+        if (performAbilities) {
+          console.log(currentAbilities);
         }
 
         const checkUI = getTask(validTasks.updateUI);

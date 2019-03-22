@@ -7,6 +7,13 @@ const Abilities = (function(){
 
   let abilityQueue = [];
 
+  const registeredAbilities = {
+    heal: {
+      name: 'heal',
+      interval: 1500
+    }
+  }
+
   const Ability = function(interval, abilityName, args) {
     this.interval = interval;
     this.abilityCall = abilityName;
@@ -72,7 +79,34 @@ const Abilities = (function(){
     },
 
     fetchAbilities: function() {
-      const retAbilities = [];
+      const returnAbilities = abilityQueue.filter(
+        ability => {
+          // console.log(`ability.cycle: ${ability.cycle}, cycle: ${cycle}`);
+          return ability.cycle === cycle});
+
+      // console.log(`returnAbilities: ${returnAbilities}, cycle: ${cycle}`);
+      returnAbilities.forEach(function(ability){
+        const abilityReference = abilityQueue.find(
+          queueAbility => queueAbility.id === ability.id
+        );
+        const removalIndex = abilityQueue.indexOf(abilityReference);
+        abilityQueue.splice(removalIndex, 1);
+      });
+
+      if (returnAbilities.length > 0) {
+        console.log('returnAbilities.length > 0');
+        return JSON.parse(JSON.stringify(returnAbilities));
+      } else {
+        return false;
+      }
+
+    },
+
+    getRegisteredAbility: function(name) {
+      const returnAbility = registeredAbilities[name];
+      if (returnAbility) {
+        return returnAbility;
+      }
     },
 
     getNewAbility: function(abilityProto) {

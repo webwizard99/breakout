@@ -655,10 +655,10 @@ const GameController = (function(){
               let tBlock = tImport[row][col];
               if (!tBlock) continue;
               if (tBlock.type === "healer") {
-                
+                const heal = Abilities.getRegisteredAbility('heal');
                 const tAbility = Abilities.getNewAbility({
-                  interval: 4500,
-                  abilityName: 'heal',
+                  interval: heal.interval,
+                  abilityName: heal.name,
                   args: []});
                 tBlock.abilityId = tAbility.createId(); 
                 tAbility.scheduleProc();                                   
