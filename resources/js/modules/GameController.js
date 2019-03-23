@@ -93,6 +93,32 @@ const GameController = (function(){
         
     }
 
+    Block.prototype.heal = function() {
+      const healMap = [
+        {x: -1, y: -1}, {x: -1, y: 0}, {x: -1, y: 1},
+        {x: 0, y: -1}, {x: 0, y: 1},
+        {x: 1, y: -1}, {x: 1, y: 0}, {x: 1, y: 1}
+      ]
+
+      healMap.map(pos => {
+        const compositePos = {
+          x: pos.x + this.col,
+          y: pos.y + this.row
+        }
+        if (compositePos.y >= 0 && compositePos.y < Constants.getLevelSize().y) {
+          if (compositePos.x >= 0 && compositePos.x < Constants.getLevelSize().x) {
+            console.log(levels[game.level][compositePos.y][compositePos.x]);
+            if (!levels[game.level][compositePos.y][compositePos.x]) return;
+            levels[game.level][compositePos.y][compositePos.x].doHeal();
+          }
+        }
+      });
+    }
+
+    Block.prototype.doHeal = function() {
+      console.log(`healing block x: ${this.col}, y: ${this.row}`);
+    }
+
     const Collision = function() {
         this.leftCollide = false;
         this.rightCollide = false;
@@ -667,6 +693,36 @@ const GameController = (function(){
             }           
           }
           game.abilitiesAttached = true;
+        },
+
+        triggerAbilities: function(abilityList) {
+          if (abilityList.length < 1) {
+            return;
+          }
+
+          let ownBlock = {};
+
+          abilityList.forEach(abilityProc => {
+            
+            levels[game.level].forEach(row => {
+              const capture = row.find(block => {
+                return block.abilityId === abilityProc.id;
+              });
+
+              if (!!capture) {
+                ownBlock = capture;
+              }
+            });
+
+            if (!!ownBlock) {
+              ownBlock[abilityProc.ability]();
+            } else {
+              console.log(`didn't find ability scheduled in block map`);
+            }
+
+          });
+
+          
         },
         
         uplinkLevels: function() {

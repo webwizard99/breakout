@@ -373,6 +373,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
         const performAbilities = getTask(validTasks.performAbilities);
         if (performAbilities) {
           console.log(currentAbilities);
+          gameCtrl.triggerAbilities(currentAbilities);
         }
 
         const checkUI = getTask(validTasks.updateUI);

@@ -44,7 +44,8 @@ const Abilities = (function(){
     this.nextProc = cycle + this.interval;
     abilityQueue.push({
       id: this.id,
-      cycle: this.nextProc
+      cycle: this.nextProc,
+      ability: this.abilityCall
     });
     console.log(abilityQueue);
   }
@@ -94,7 +95,6 @@ const Abilities = (function(){
       });
 
       if (returnAbilities.length > 0) {
-        console.log('returnAbilities.length > 0');
         return JSON.parse(JSON.stringify(returnAbilities));
       } else {
         return false;
