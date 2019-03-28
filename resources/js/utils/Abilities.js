@@ -47,16 +47,14 @@ const Abilities = (function(){
       cycle: this.nextProc,
       ability: this.abilityCall
     });
-    console.log(abilityQueue);
   }
 
   const clearAbilityFromQueue = function(id) {
     if (abilityQueue.length < 1) return true;
-    
     const markedAbility = abilityQueue.filter(ability => ability.id === id);
     markedAbility.forEach(ability => {
       const abilityIndex = abilityQueue.indexOf(ability);
-      abilityQueue.slice(abilityIndex, 1);
+      abilityQueue.splice(abilityIndex, 1);
     });
   }
 
@@ -83,7 +81,8 @@ const Abilities = (function(){
       const returnAbilities = abilityQueue.filter(
         ability => {
           // console.log(`ability.cycle: ${ability.cycle}, cycle: ${cycle}`);
-          return ability.cycle === cycle});
+          return (ability.cycle === cycle ||
+            ability.cycle - maxCycle === cycle)});
 
       // console.log(`returnAbilities: ${returnAbilities}, cycle: ${cycle}`);
       returnAbilities.forEach(function(ability){

@@ -134,6 +134,16 @@ const UIController = (function(){
         ctx.closePath();
     }
 
+    const drawRectOutline = function(ctx, color, width, x, y, h, w) {
+      ctx.beginPath();
+      
+      ctx.lineWidth = width;
+      ctx.strokeStyle = color;
+      ctx.rect(x, y, w, h);
+      ctx.stroke();
+      ctx.closePath();
+    }
+
     const drawShadowedRect = function(ctx, fill, fillShadow, x, y, h, w) {
         ctx.save();
         ctx.beginPath();
@@ -248,6 +258,14 @@ const UIController = (function(){
                             posThis.y,
                             h,
                             w);
+
+                        if (tCBlock.type === 'healer') {
+                          drawRectOutline(CTX, 'green', 3,
+                          posThis.x,
+                          posThis.y,
+                          h,
+                          w);
+                        }
                     }
                 }
                 

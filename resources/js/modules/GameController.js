@@ -88,7 +88,12 @@ const GameController = (function(){
     };
 
     Block.prototype.die = function() {
-        game.points += 30 + Math.floor(game.cyclesSincePaddle / game.updateCyclesSec);
+        if (this.abilityId) {
+          this.ability.unregister();
+          this.ability.clearFromQueue();
+        }
+        game.points += 30 +
+          ((this.type !== 'basic' ? 1 : 0) * 100) + Math.floor(game.cyclesSincePaddle / game.updateCyclesSec);
         levels[game.level][this.row][this.col] = false;
         
     }
@@ -96,7 +101,7 @@ const GameController = (function(){
     Block.prototype.heal = function() {
       const healMap = [
         {x: -1, y: -1}, {x: -1, y: 0}, {x: -1, y: 1},
-        {x: 0, y: -1}, {x: 0, y: 1},
+        {x: 0, y: -1}, {x: 0, y: 0}, {x: 0, y: 1},
         {x: 1, y: -1}, {x: 1, y: 0}, {x: 1, y: 1}
       ]
 
@@ -107,16 +112,20 @@ const GameController = (function(){
         }
         if (compositePos.y >= 0 && compositePos.y < Constants.getLevelSize().y) {
           if (compositePos.x >= 0 && compositePos.x < Constants.getLevelSize().x) {
-            console.log(levels[game.level][compositePos.y][compositePos.x]);
             if (!levels[game.level][compositePos.y][compositePos.x]) return;
             levels[game.level][compositePos.y][compositePos.x].doHeal();
           }
         }
       });
+      this.ability.scheduleProc();
     }
 
     Block.prototype.doHeal = function() {
-      console.log(`healing block x: ${this.col}, y: ${this.row}`);
+      this.hp += 2;
+      if (this.hp > this.maxHp) {
+        this.hp = this.maxHp;
+      }
+      this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 20);
     }
 
     const Collision = function() {
@@ -687,6 +696,7 @@ const GameController = (function(){
                   abilityName: heal.name,
                   args: []});
                 tBlock.abilityId = tAbility.createId(); 
+                tBlock.ability = tAbility;
                 tAbility.scheduleProc();                                   
               }                        
       
@@ -708,6 +718,7 @@ const GameController = (function(){
               const capture = row.find(block => {
                 return block.abilityId === abilityProc.id;
               });
+              
 
               if (!!capture) {
                 ownBlock = capture;
