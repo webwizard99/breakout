@@ -77,6 +77,10 @@ const GameController = (function(){
 
     Block.prototype.takeDamage = function(val) {
         
+        if (this.type === 'strong') {
+          val = val / 2;
+        }
+
         if (val) {
             this.hp -= val;
             this.opacity = Math.floor(((this.hp/ this.maxHp) * 70) + 20);

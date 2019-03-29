@@ -266,6 +266,15 @@ const UIController = (function(){
                           h,
                           w);
                         }
+
+                        if (tCBlock.type === 'strong') {
+                          drawRectOutline(CTX, 'rgba(140,140,140,1)', 3,
+                          posThis.x,
+                          posThis.y,
+                          h,
+                          w);
+                        }
+                        
                     }
                 }
                 
