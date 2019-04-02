@@ -139,7 +139,10 @@ const UIController = (function(){
       
       ctx.lineWidth = width;
       ctx.strokeStyle = color;
-      ctx.rect(x, y, w, h);
+      ctx.rect(x + (width /2),
+        y + (width /2),
+        w - width,
+        h - width);
       ctx.stroke();
       ctx.closePath();
     }
@@ -260,7 +263,7 @@ const UIController = (function(){
                             w);
 
                         if (tCBlock.type === 'healer') {
-                          drawRectOutline(CTX, 'green', 3,
+                          drawRectOutline(CTX, 'green', 2,
                           posThis.x,
                           posThis.y,
                           h,
@@ -268,7 +271,7 @@ const UIController = (function(){
                         }
 
                         if (tCBlock.type === 'strong') {
-                          drawRectOutline(CTX, 'rgba(140,140,140,1)', 3,
+                          drawRectOutline(CTX, 'rgba(140,140,140,1)', 2,
                           posThis.x,
                           posThis.y,
                           h,
