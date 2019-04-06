@@ -1,3 +1,5 @@
+import Constants from '../utils/Constants.js';
+
 const Effects = (function(){
   let cycle = 0;
   const maxCycle = 9999;
@@ -5,9 +7,15 @@ const Effects = (function(){
   let activeEffectCreatorIds = [];
   let nextEffectCreatorId = 1;
 
-  const Effect = function(duration, position, form, creatorId) {
-    this.cycleStart = cycle;
-    this.cycleEnd = cycle + duration;
+  let effectsQueue = [];
+
+  const msToCycles = function(ms) {
+    return Math.floor(ms * Constants.getCyclesPerSecond() / 1000);
+  }
+
+  const Effect = function(start, duration, position, form, creatorId) {
+    this.cycleStart = start;
+    this.cycleEnd = start + duration;
     this.duration = duration;
     this.position = position;
     this.form = form;
@@ -26,7 +34,42 @@ const Effects = (function(){
     clearCreatorEffects(this.id);
   }
 
-  let effectsQueue = [];
+  EffectCreator.prototype.unregister = function() {
+    const thisIndex = activeEffectCreatorIds.indexOf(this.id);
+    const deletedId = activeEffectCreatorIds.splice[thisIndex];
+    if (deletedId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  EffectCreator.prototype.draftEffects = function(type, coordList) {
+
+    const duration = msToCycles(25);
+
+    if (type === 'heal') {
+      coordList.forEach(pos => {
+        for (let frame = 0; frame < 15; frame++) {
+          let alphaCalc = 0.046 * frame + (0.0005 * frame * frame);
+          if (frame > 9) {
+            alphaCalc -= (frame - 9) * 0.0012;
+          }
+          const newEffect = new Effect(cycle + (duration * frame),
+            duration, 
+            {x: pos.x + Constants.getBlockProto().offsetX,
+            y: pos.y + Constants.getBlockProto().offsetY}, 
+            {h: Constants.getBlockProto().height,
+            w: Constants.getBlockProto().width,
+            color: `rgba(140, 210, 180, ${alphaCalc})`},
+            this.id
+          );
+          effectsQueue.push(newEffect);
+        }
+      });
+    }
+    
+  }
 
   const getEffectCreatorId = function() {
     const thisCreatorID = nextEffectCreatorId;
@@ -43,11 +86,17 @@ const Effects = (function(){
       const fxIndex = effectsQueue.indexOf(effect);
       effectsQueue.slice(fxIndex, 1);
     });
+
+
   }
 
   return {
     getCycle: function() {
       return cycle;
+    },
+
+    getMaxCycle: function() {
+      return maxCycle;
     },
 
     advanceCycle: function() {
@@ -60,6 +109,36 @@ const Effects = (function(){
 
     clearQueue: function() {
       effectsQueue = [];
+    },
+
+    getNewEffectCreator: function() {
+      const newEffectCreator = new EffectCreator();
+      return newEffectCreator;
+    },
+
+    fetchEffects: function() {
+      
+      const returnEffects = effectsQueue.filter(
+        effect => {
+          return (effect.cycleStart === cycle ||
+            effectsQueue.cycle - maxCycle === cycle)
+        }
+      );
+
+      returnEffects.forEach(function(effect){
+        const effectReference = effectsQueue.find(
+          queueEffect => queueEffect === effect
+        );
+
+        const removalIndex = effectsQueue.indexOf(effectReference);
+        effectsQueue.splice(removalIndex, 1);
+      });
+
+      if (returnEffects.length > 0) {
+        return JSON.parse(JSON.stringify(returnEffects));
+      } else {
+        return false;
+      }
     }
   }
 }());

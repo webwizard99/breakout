@@ -1,4 +1,5 @@
 import Constants from "../utils/Constants.js";
+import Effects from '../utils/Effects.js';
 
 const UIController = (function(){
     const DOMStrings = {
@@ -86,6 +87,8 @@ const UIController = (function(){
             shadow: `rgba(40, 40, 40, 0.8)`
         }
     }
+
+    let activeEffects = [];
 
     let activeObjects = {
       player: {
@@ -507,7 +510,80 @@ const UIController = (function(){
 
         initActiveObjects: function() {
           activeObjects = JSON.parse(JSON.stringify(activeObjectsInit));
+        },
+
+        addActiveEffects: function(incomingEffects) {
+          incomingEffects.forEach(effect => {
+            activeEffects.push(effect);
+          });
+        },
+
+        checkEffectEnd: function(cycle) {
+          const clearEffects = activeEffects.find(effect => {
+            let endCycleCalc = effect.cycleEnd;
+            if (endCycleCalc >= Effects.getMaxCycle()) {
+              endCycleCalc -= Effects.getMaxCycle();
+            }
+            return (endCycleCalc === cycle)
+          });
+
+          if (!clearEffects) {
+            return false;
+          } else {
+            return true;
+          }
+          
+          
+        },
+
+        clearEffectsOnCycle: function(cycle) {
+          const clearEffects = activeEffects.filter(effect => {
+            let endCycleCalc = effect.cycleEnd;
+            if (endCycleCalc >= Effects.getMaxCycle()) {
+              endCycleCalc -= Effects.getMaxCycle();
+            }
+            return (endCycleCalc <= cycle)
+          });
+
+          clearEffects.forEach(effect => {
+            const effectIndex = activeEffects.indexOf(effect);
+            activeEffects.splice(effectIndex, 1);
+
+            const efxCanvas = document.querySelector(DOMStrings.Canvas.effects);
+            const efxCtx = efxCanvas.getContext("2d");
+
+            efxCtx.clearRect(
+              effect.position.x,
+              effect.position.y - 1,
+              effect.form.w,
+              effect.form.h + 2);
+          })
+
+        },
+
+        renderEffects: function(cycle) {
+          const renderEffects = activeEffects.filter(effect => {
+            return effect.cycleStart === cycle;
+          });
+
+          renderEffects.forEach(effect => {
+            const effectIndex = activeEffects.indexOf(effect);
+
+            const efxCanvas = document.querySelector(DOMStrings.Canvas.effects);
+            const efxCtx = efxCanvas.getContext("2d");
+
+            drawRect(efxCtx,
+              effect.form.color,
+              effect.position.x,
+              effect.position.y,
+              effect.form.h,
+              effect.form.w);
+          });
+
+          
         }
+
+
 
         
     }

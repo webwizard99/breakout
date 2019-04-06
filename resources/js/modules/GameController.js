@@ -1,6 +1,7 @@
 import Levels from '../utils/Levels.js';
 import Constants from '../utils/Constants.js';
 import Abilities from '../utils/Abilities.js';
+import Effects from '../utils/Effects.js';
 
 // Model for game calculations
 const GameController = (function(){
@@ -95,6 +96,8 @@ const GameController = (function(){
         if (this.abilityId) {
           this.ability.unregister();
           this.ability.clearFromQueue();
+          this.effectCreator.clearEffects();
+          this.effectCreator.unregister();
         }
         game.points += 30 +
           ((this.type !== 'basic' ? 1 : 0) * 100) + Math.floor(game.cyclesSincePaddle / game.updateCyclesSec);
@@ -109,6 +112,8 @@ const GameController = (function(){
         {x: 1, y: -1}, {x: 1, y: 0}, {x: 1, y: 1}
       ]
 
+      let effectsMap = [];
+
       healMap.map(pos => {
         const compositePos = {
           x: pos.x + this.col,
@@ -117,10 +122,13 @@ const GameController = (function(){
         if (compositePos.y >= 0 && compositePos.y < Constants.getLevelSize().y) {
           if (compositePos.x >= 0 && compositePos.x < Constants.getLevelSize().x) {
             if (!levels[game.level][compositePos.y][compositePos.x]) return;
+            const targetBlock = levels[game.level][compositePos.y][compositePos.x];
+            effectsMap.push({x: targetBlock.position.x, y: targetBlock.position.y});
             levels[game.level][compositePos.y][compositePos.x].doHeal();
           }
         }
       });
+      this.effectCreator.draftEffects('heal', effectsMap);
       this.ability.scheduleProc();
     }
 
@@ -701,6 +709,8 @@ const GameController = (function(){
                   args: []});
                 tBlock.abilityId = tAbility.createId(); 
                 tBlock.ability = tAbility;
+                const tEffectCreator = Effects.getNewEffectCreator();
+                tBlock.effectCreator = tEffectCreator;
                 tAbility.scheduleProc();                                   
               }                        
       

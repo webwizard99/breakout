@@ -15,7 +15,8 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
       setLevel0: 'setLevel0',
       drawScore: 'drawScore',
       drawHighScore: 'drawHighScore',
-      performAbilities: 'performAbilities'};
+      performAbilities: 'performAbilities',
+      renderEffects: 'renderEffects'};
 
     const validPhases = {
       menu: 'menu',
@@ -375,6 +376,24 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
           gameCtrl.triggerAbilities(currentAbilities);
           addTask(validTasks.updateUI);
           addTask(validTasks.drawBlocks);
+        }
+
+        const currentEffects = eFX.fetchEffects();
+
+        if (currentEffects) {
+          UICtrl.addActiveEffects(currentEffects);
+          addTask(validTasks.renderEffects);
+        }
+
+        const clearEffects = UICtrl.checkEffectEnd(eFX.getCycle());
+
+        if (clearEffects) {
+          UICtrl.clearEffectsOnCycle(eFX.getCycle());
+        }
+
+        const renderEffects = getTask(validTasks.renderEffects);
+        if (renderEffects) {
+          UICtrl.renderEffects(eFX.getCycle());
         }
 
         const checkUI = getTask(validTasks.updateUI);
