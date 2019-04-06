@@ -46,14 +46,18 @@ const Effects = (function(){
 
   EffectCreator.prototype.draftEffects = function(type, coordList) {
 
-    const duration = msToCycles(25);
+    const duration = msToCycles(55);
+    const baseTime = 0.054;
+    const exponentTime = 0.0005;
+    const decayFrame = 8;
+    const decayTime = 0.032;
 
     if (type === 'heal') {
       coordList.forEach(pos => {
         for (let frame = 0; frame < 15; frame++) {
-          let alphaCalc = 0.046 * frame + (0.0005 * frame * frame);
-          if (frame > 9) {
-            alphaCalc -= (frame - 9) * 0.0012;
+          let alphaCalc = baseTime * frame + (exponentTime * frame * frame);
+          if (frame > decayFrame) {
+            alphaCalc -= (frame - decayFrame) * decayTime;
           }
           const newEffect = new Effect(cycle + (duration * frame),
             duration, 
@@ -61,7 +65,7 @@ const Effects = (function(){
             y: pos.y + Constants.getBlockProto().offsetY}, 
             {h: Constants.getBlockProto().height,
             w: Constants.getBlockProto().width,
-            color: `rgba(140, 210, 180, ${alphaCalc})`},
+            color: `rgba(120, 190, 140, ${alphaCalc})`},
             this.id
           );
           effectsQueue.push(newEffect);
