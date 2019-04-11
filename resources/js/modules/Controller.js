@@ -21,10 +21,11 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
     const validPhases = {
       menu: 'menu',
       title: 'title',
-      game: 'game'
+      game: 'game',
+      victory: 'victory'
     }
 
-    const gamePhase = [validPhases.menu, validPhases.title, validPhases.game];
+    let gamePhase = validPhases.menu;
     
     const setEventListeners = function() {
         
@@ -55,16 +56,23 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
     const handleMovement = function(event) {
         if (!event.isTrusted) return;
         
-        
+        if (event.keyCode === 192) {
+          console.log('developer controls!')
+          console.log(eFX.getQueue());
+          const UIObjects = UICtrl.getActiveObjects()
+          console.log(`UIObjects: ${UIObjects}`);
+        }
+
         if (event.keyCode === 13) {
-            if (gameCtrl.getMenuOn()) {
+            if (gamePhase === validPhases.menu) {
                 let tPoints = gameCtrl.getScore();
                 let tContinues = gameCtrl.getContinueCount();
                 if (tContinues === 0 || tPoints >= tContinues * 500) {
                     
                     
                     setTimeout(function(){
-                        gameCtrl.setDisplayLevelName(true);
+                        // gameCtrl.setDisplayLevelName(true);
+                        gamePhase = validPhases.title;
                         gameCtrl.setScore(tPoints - (tContinues * 500));
                         gameCtrl.setContinueCount(tContinues + 1);
                         gameCtrl.setMenuOn(false);
@@ -72,18 +80,19 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
                     }, gameCtrl.getMenuDelay());
                 }
                 
-            } else if (gameCtrl.getVictory()) {
+            } else if (gamePhase === validPhases.victory) {
                 setTimeout(function(){
                     
                     gameCtrl.setLevel(0)
-                    gameCtrl.setMenuOn(true);
+                    // gameCtrl.setMenuOn(true);
+                    gamePhase = validPhases.menu;
                 }, 500);
             }
         }
 
         if (event.keyCode === 27) {
                        
-            if (gameCtrl.getMenuOn()) {
+            if (gamePhase === validPhases.menu) {
                 
                 
                 
@@ -91,7 +100,8 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
                     gameCtrl.setContinueCount(0);
                     gameCtrl.setScore(0);
                     gameCtrl.setVictory(false);
-                    gameCtrl.setDisplayLevelName(true);
+                    // gameCtrl.setDisplayLevelName(true);
+                    gamePhase = validPhases.title;
                     gameCtrl.setMenuOn(false);
                     gameCtrl.setLevel(0);
                     restartGame();
@@ -102,10 +112,11 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
                 
             }
 
-            if (gameCtrl.getVictory()) {
+            if (gamePhase === validPhases.victory) {
                 setTimeout(function(){
                     gameCtrl.setVictory(false);
-                    gameCtrl.setMenuOn(true);
+                    // gameCtrl.setMenuOn(true);
+                    gamePhase = validPhases.menu;
                 }, 500);
             }
         }
@@ -173,6 +184,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
         gameCtrl.setBallVelocity(gameCtrl.startRandom());
         gameCtrl.setIsStarted(true);
         gameCtrl.setGameInit();
+        gamePhase = validPhases.menu;
         UIObjects.player.ball = true;
         UIObjects.player.paddle = true;
         UIObjects.UI.score = true;
@@ -242,8 +254,11 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
                 // current level progress
                 gameCtrl.uplinkLevels();
                 ablties.clearAbilities();
+                eFX.clearAllEffects();
+                UICtrl.clearAllEffects();
                 gameCtrl.setGameOver(false);
-                gameCtrl.setMenuOn(true);
+                // gameCtrl.setMenuOn(true);
+                gamePhase = validPhases.menu;
                 if (gameCtrl.getContinueCount() === 0) {
                     gameCtrl.setContinueCount(1);
                 }
@@ -281,22 +296,24 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
             if (!UIObjects.UI.victory) {
               UIObjects.UI.victory = true;
               UICtrl.displayVictory(gameCtrl.getScore());
+              gamePhase = validPhases.victory;
             }
             
+            UICtrl.setActiveObjects(UIObjects);
+
             return;
         }
         
         // If in menu mode, draw menu
-        if (gameCtrl.getMenuOn()) {
+        if (gamePhase === validPhases.menu) {
             const currContinues = gameCtrl.getContinueCount();
-            
+
             if (!UIObjects.UI.menu) {
               UICtrl.drawMenu(currContinues);
               UIObjects.UI.menu = true;
-              
             }
             UICtrl.setActiveObjects(UIObjects);
-            return;
+            
         } else {
           if (UIObjects.UI.menu) {
             UICtrl.clearMenu();
@@ -305,13 +322,19 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
           }
         }
 
-        // check the blocks for collisions
-        const checkHit = gameCtrl.checkBlocks();
-        if (checkHit) {
-          addTask(validTasks.highScore);
+        if (gamePhase === validPhases.menu && !UIObjects.UI.score) {
           addTask(validTasks.updateUI);
-          addTask(validTasks.checkClear);
-          addTask(validTasks.drawBlocks);
+        }
+
+        // check the blocks for collisions
+        if (gamePhase === validPhases.game) {
+           const checkHit = gameCtrl.checkBlocks();
+          if (checkHit) {
+            addTask(validTasks.highScore);
+            addTask(validTasks.updateUI);
+            addTask(validTasks.checkClear);
+            addTask(validTasks.drawBlocks);
+          }
         }
 
         const checkScore = getTask(validTasks.highScore);
@@ -334,66 +357,71 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
           UICtrl.drawHighScore(tScore);
         }
 
-        const checkClear = getTask(validTasks.checkClear);
-        if (checkClear) {
-          
-          //check for stage completion
-          if (gameCtrl.checkComplete()) {
-            // alert('complete!')
+        if (gamePhase === validPhases.game) {
+          const checkClear = getTask(validTasks.checkClear);
+          if (checkClear) {
             
-            setStartConditions();
-            gameCtrl.setPaddleVelocity(0);
+            //check for stage completion
+            if (gameCtrl.checkComplete()) {
+              // alert('complete!')
+              
+              setStartConditions();
+              gameCtrl.setPaddleVelocity(0);
 
-            if (gameCtrl.getLevel() + 1 < gameCtrl.getMaxLevel()) {
-                // gameCtrl.uplinkLevel(gameCtrl.getLevel());
-                let nextLevel = gameCtrl.getLevel();
-                nextLevel += 1;
-                gameCtrl.setLevel(nextLevel);
-                gameCtrl.setDisplayLevelName(true);
-                
-            } else {
-                gameCtrl.setVictory(true);
+              if (gameCtrl.getLevel() + 1 < gameCtrl.getMaxLevel()) {
+                  // gameCtrl.uplinkLevel(gameCtrl.getLevel());
+                  let nextLevel = gameCtrl.getLevel();
+                  nextLevel += 1;
+                  gameCtrl.setLevel(nextLevel);
+                  // gameCtrl.setDisplayLevelName(true);
+                  gamePhase = validPhases.title;
+                  
+              } else {
+                  gameCtrl.setVictory(true);
+              }
+              
+              
+              gameCtrl.setIsStarted(false);
+              window.setTimeout(function(){ 
+                  gameCtrl.setIsStarted(true);
+                  
+              }, 1200);
+              
             }
-            
-            
-            gameCtrl.setIsStarted(false);
-            window.setTimeout(function(){ 
-                gameCtrl.setIsStarted(true);
-                
-            }, 1200);
-            
+
+          }
+        }
+
+        if (gamePhase === validPhases.game) {
+          const currentAbilities = ablties.fetchAbilities();
+          if (currentAbilities) {
+            addTask(validTasks.performAbilities);
           }
 
-        }
+          const performAbilities = getTask(validTasks.performAbilities);
+          if (performAbilities) {
+            gameCtrl.triggerAbilities(currentAbilities);
+            addTask(validTasks.updateUI);
+            addTask(validTasks.drawBlocks);
+          }
 
-        const currentAbilities = ablties.fetchAbilities();
-        if (currentAbilities) {
-          addTask(validTasks.performAbilities);
-        }
+          const currentEffects = eFX.fetchEffects();
 
-        const performAbilities = getTask(validTasks.performAbilities);
-        if (performAbilities) {
-          gameCtrl.triggerAbilities(currentAbilities);
-          addTask(validTasks.updateUI);
-          addTask(validTasks.drawBlocks);
-        }
+          if (currentEffects) {
+            UICtrl.addActiveEffects(currentEffects);
+            addTask(validTasks.renderEffects);
+          }
 
-        const currentEffects = eFX.fetchEffects();
+          const clearEffects = UICtrl.checkEffectEnd(eFX.getCycle());
 
-        if (currentEffects) {
-          UICtrl.addActiveEffects(currentEffects);
-          addTask(validTasks.renderEffects);
-        }
+          if (clearEffects) {
+            UICtrl.clearEffectsOnCycle(eFX.getCycle());
+          }
 
-        const clearEffects = UICtrl.checkEffectEnd(eFX.getCycle());
-
-        if (clearEffects) {
-          UICtrl.clearEffectsOnCycle(eFX.getCycle());
-        }
-
-        const renderEffects = getTask(validTasks.renderEffects);
-        if (renderEffects) {
-          UICtrl.renderEffects(eFX.getCycle());
+          const renderEffects = getTask(validTasks.renderEffects);
+          if (renderEffects) {
+            UICtrl.renderEffects(eFX.getCycle());
+          }
         }
 
         const checkUI = getTask(validTasks.updateUI);
@@ -418,7 +446,7 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
         const blockProtoT = gameCtrl.getBlockProto();
         const cellT = gameCtrl.getCell();
         
-        if (!gameCtrl.getDisplayLevelName()) {
+        if (!(gamePhase === validPhases.title)) {
           if (UIObjects.UI.title) {
             UICtrl.clearTitle();
             UIObjects.UI.title = false;
@@ -439,11 +467,13 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
             setTimeout(function(){
                 gameCtrl.setDisplayLevelName(false);
                 gameCtrl.setIsStarted(true);
+                gamePhase = validPhases.game;
                 gameCtrl.attachAbilities();
             }, gameCtrl.getTitleDelay())
         }
         
-        const drawBlocks = getTask(validTasks.drawBlocks);
+        if (gamePhase === validPhases.game) {
+          const drawBlocks = getTask(validTasks.drawBlocks);
           if (drawBlocks) {
             const blocksCanvas = document.querySelector(DOM.Canvas.blocks);
             const blocksCtx = blocksCanvas.getContext("2d");
@@ -452,47 +482,48 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
             UIObjects.blocks = true;
           }
 
-        // clear last ball and paddle positoin
-        UICtrl.clearBall(playerCtx, ball);
-        UICtrl.clearPaddle(playerCtx, paddle);
+          // clear last ball and paddle positoin
+          UICtrl.clearBall(playerCtx, ball);
+          UICtrl.clearPaddle(playerCtx, paddle);
 
-        // draw the ball and paddle
-        UICtrl.drawBall(playerCtx, ball);
-        UICtrl.drawPaddle(playerCtx, paddle);
+          // draw the ball and paddle
+          UICtrl.drawBall(playerCtx, ball);
+          UICtrl.drawPaddle(playerCtx, paddle);
 
-        // after drawing frame, move ball
-        gameCtrl.setBallPos(
-            ball.position.x + (ball.velocity.x * (100 / gameCtrl.getCyclesSec())),
-            ball.position.y - (ball.velocity.y * (100 / gameCtrl.getCyclesSec())));
+          // after drawing frame, move ball
+          gameCtrl.setBallPos(
+              ball.position.x + (ball.velocity.x * (100 / gameCtrl.getCyclesSec())),
+              ball.position.y - (ball.velocity.y * (100 / gameCtrl.getCyclesSec())));
 
-        gameCtrl.setPaddlePos(
-            paddle.position.x + (paddle.velocity * (100 / gameCtrl.getCyclesSec())),
-            paddle.position.y
-        );
-        
+          gameCtrl.setPaddlePos(
+              paddle.position.x + (paddle.velocity * (100 / gameCtrl.getCyclesSec())),
+              paddle.position.y
+          );
+          
 
-        // handle Paddle movement if a key is pressed
-        if (gameCtrl.isLeftPress()) {
-            gameCtrl.addPaddleVelocity(-paddle.acceleration);
+          // handle Paddle movement if a key is pressed
+          if (gameCtrl.isLeftPress()) {
+              gameCtrl.addPaddleVelocity(-paddle.acceleration);
+          }
+          if (gameCtrl.isRightPress()) {
+              gameCtrl.addPaddleVelocity(paddle.acceleration);
+          }
+
+          // assert drag if not control is active
+          if (!gameCtrl.isLeftPress() && !gameCtrl.isRightPress()) {
+              gameCtrl.dragPaddle();
+          }
+
+          // play sound if ballHit is true
+          const isHit = gameCtrl.getBallHit();
+          if (isHit) {
+              UICtrl.playBallHit();
+              gameCtrl.setBallHit(false);
+          }
+
+          eFX.advanceCycle();
+          ablties.advanceCycle();
         }
-        if (gameCtrl.isRightPress()) {
-            gameCtrl.addPaddleVelocity(paddle.acceleration);
-        }
-
-        // assert drag if not control is active
-        if (!gameCtrl.isLeftPress() && !gameCtrl.isRightPress()) {
-            gameCtrl.dragPaddle();
-        }
-
-        // play sound if ballHit is true
-        const isHit = gameCtrl.getBallHit();
-        if (isHit) {
-            UICtrl.playBallHit();
-            gameCtrl.setBallHit(false);
-        }
-
-        eFX.advanceCycle();
-        ablties.advanceCycle();
 
         UICtrl.setActiveObjects(UIObjects);
     }
@@ -560,7 +591,8 @@ const Controller = (function(gameCtrl, UICtrl, eFX, ablties){
         
         stop: function() {
             mainDrive.stopTimer();
-            gameCtrl.setMenuOn(true);
+            // gameCtrl.setMenuOn(true);
+            gamePhase = validPhases.menu;
             gameCtrl.setIsStarted(false);
         }
     }

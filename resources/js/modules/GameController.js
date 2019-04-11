@@ -272,8 +272,8 @@ const GameController = (function(){
         },
         size: 6,
         damage: 3,
-        maxSpeed: 3.2,
-        minSpeed: 1.6
+        maxSpeed: 2.8,
+        minSpeed: 1.8
     }
 
     let paddle = {
@@ -994,7 +994,7 @@ const GameController = (function(){
             if ((masterCollide.leftCollide && masterCollide.topCollide) ||
               (masterCollide.leftCollide && masterCollide.bottomCollide) ||
               (masterCollide.rightCollide && masterCollide.topCollide) ||
-              (masterCollide.leftCollide && masterCollide.bottomCollide)) {
+              (masterCollide.rightCollide && masterCollide.bottomCollide)) {
                 masterCollide.cornerCollide();
               }
             masterCollide.effectCollide();

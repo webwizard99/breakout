@@ -46,15 +46,17 @@ const Effects = (function(){
 
   EffectCreator.prototype.draftEffects = function(type, coordList) {
 
-    const duration = msToCycles(55);
-    const baseTime = 0.054;
+    const totalDuration = 800;
+    const frames = 8;
+    const duration = msToCycles(totalDuration / frames);
     const exponentTime = 0.0005;
-    const decayFrame = 8;
-    const decayTime = 0.032;
+    const decayFrame = frames - Math.floor(frames / 2);
+    const baseTime = 0.8 / frames;
+    const decayTime = 1.2 / decayFrame;
 
     if (type === 'heal') {
       coordList.forEach(pos => {
-        for (let frame = 0; frame < 15; frame++) {
+        for (let frame = 0; frame < frames; frame++) {
           let alphaCalc = baseTime * frame + (exponentTime * frame * frame);
           if (frame > decayFrame) {
             alphaCalc -= (frame - decayFrame) * decayTime;
@@ -115,6 +117,10 @@ const Effects = (function(){
       effectsQueue = [];
     },
 
+    getQueue: function() {
+      return effectsQueue;
+    },
+
     getNewEffectCreator: function() {
       const newEffectCreator = new EffectCreator();
       return newEffectCreator;
@@ -143,6 +149,12 @@ const Effects = (function(){
       } else {
         return false;
       }
+    },
+
+    clearAllEffects: function() {
+      effectsQueue = [];
+      activeEffectCreatorIds = [];
+      nextEffectCreatorId = 1;
     }
   }
 }());

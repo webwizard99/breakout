@@ -578,8 +578,22 @@ const UIController = (function(){
               effect.position.y,
               effect.form.h,
               effect.form.w);
-          });
+          }); 
+        },
 
+        clearAllEffects: function() {
+          activeEffects.forEach(effect => {
+            const efxCanvas = document.querySelector(DOMStrings.Canvas.effects);
+            const efxCtx = efxCanvas.getContext("2d");
+
+            efxCtx.clearRect(
+              effect.position.x,
+              effect.position.y - 1,
+              effect.form.w,
+              effect.form.h + 2);
+          });
+          
+          activeEffects = [];
           
         }
 
